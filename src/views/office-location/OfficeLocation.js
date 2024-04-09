@@ -23,7 +23,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 const OfficeLocation = () => {
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState(true);
   const [address, setAddress] = useState('');
   const [email, setEmail] = useState('');
   const [contact, setContact] = useState('');

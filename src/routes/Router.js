@@ -18,8 +18,6 @@ const BlankLayout = Loadable(lazy(() => import('../layouts/blank/BlankLayout')))
 const Dashboard = Loadable(lazy(() => import('../views/dashboard/Dashboard')));
 const ValuableClients = Loadable(lazy(() => import('../views/valuable-clients/ValuableClients')));
 const Testimonials = Loadable(lazy(() => import('../views/testimonials/Testimonials')));
-// import ValuableClients from 'src/views/valuable-clients/ValuableClients';
-// import Testimonials from '../views/sample-page/Testimonials';
 const Icons = Loadable(lazy(() => import('../views/icons/Icons')));
 const TypographyPage = Loadable(lazy(() => import('../views/utilities/TypographyPage')));
 const Shadow = Loadable(lazy(() => import('../views/utilities/Shadow')));
@@ -32,8 +30,8 @@ const Router = [
     path: '/',
     element: <FullLayout />,
     children: [
-      { path: '/', element: <Navigate to="/dashboard" /> },
-      { path: '/dashboard', exact: true, element: <Dashboard /> },
+      { path: '/', element: <Navigate to="/auth/login" /> },
+      // { path: '/dashboard', exact: true, element: <Dashboard /> },
       { path: '/testimonials', exact: true, element: <Testimonials /> },
       { path: '/clients', exact: true, element: <ValuableClients /> },
       { path: '/life-category', exact: true, element: <Life_category /> },

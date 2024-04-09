@@ -24,7 +24,8 @@ const AuthLogin = ({ title, subtitle, subtext }) => {
     try {
       const response = await axios.post('/auth/login', newData);
       console.log(response.data); // Handle success
-      nevigate('/testimonials');
+      
+      nevigate('/quotes');
       // Redirect or set authentication status in your application
     } catch (error) {
         alert(error.response.data.message)

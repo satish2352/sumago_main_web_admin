@@ -4,11 +4,11 @@ import { Grid, Box, Card, Stack, Typography } from '@mui/material';
 
 // components
 import PageContainer from 'src/components/container/PageContainer';
-import Logo from 'src/layouts/full/shared/logo/Logo';
+// import Logo from 'src/layouts/full/shared/logo/Logo';
 import AuthLogin from './auth/AuthLogin';
-
+import logo from "../../assets/images/sumagologo.png"
 const Login2 = () => {
-  
+
   return (
     <PageContainer title="Login" description="this is Login page">
       <Box
@@ -39,12 +39,13 @@ const Login2 = () => {
           >
             <Card elevation={9} sx={{ p: 4, zIndex: 1, width: '100%', maxWidth: '500px' }}>
               <Box display="flex" alignItems="center" justifyContent="center">
-                <Logo />
+                {/* <Logo /> */}
+                <img src={logo} alt="logo" style={{ width: "100%" }} />
               </Box>
               <AuthLogin
                 subtext={
                   <Typography variant="subtitle1" textAlign="center" color="textSecondary" mb={1}>
-                    Sumago Slogen
+
                   </Typography>
                 }
                 subtitle={
