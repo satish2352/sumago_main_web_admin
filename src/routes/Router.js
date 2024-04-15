@@ -9,6 +9,7 @@ import OfficeLocation from 'src/views/office-location/OfficeLocation';
 import ContactForm from 'src/views/contactform/ContactForm';
 import ApplyNowForm from 'src/views/apply-now/ApplyNowForm';
 import QuotesForm from 'src/views/Quotes-Form/QuotesForm';
+import ProtectedRoutes from 'src/ProtectedRoutes';
 
 /* ***Layouts**** */
 const FullLayout = Loadable(lazy(() => import('../layouts/full/FullLayout')));
@@ -32,16 +33,32 @@ const Router = [
     children: [
       { path: '/', element: <Navigate to="/auth/login" /> },
       // { path: '/dashboard', exact: true, element: <Dashboard /> },
-      { path: '/testimonials', exact: true, element: <Testimonials /> },
-      { path: '/clients', exact: true, element: <ValuableClients /> },
-      { path: '/life-category', exact: true, element: <Life_category /> },
-      { path: '/life-category-details', exact: true, element: <LifeCategoryDetails /> },
-      { path: '/job-opening', exact: true, element: <JobOpening /> },
-      { path: '/internship-opening', exact: true, element: <InternshipOpening /> },
-      { path: '/office-location', exact: true, element: <OfficeLocation /> },
-      { path: '/contactform', exact: true, element: <ContactForm /> },
-      { path: '/applynow', exact: true, element: <ApplyNowForm /> },
-      { path: '/quotes', exact: true, element: <QuotesForm /> },
+      { path: '/testimonials', exact: true, element: <ProtectedRoutes Component={Testimonials} /> },
+      { path: '/clients', exact: true, element: <ProtectedRoutes Component={ValuableClients} /> },
+      {
+        path: '/life-category',
+        exact: true,
+        element: <ProtectedRoutes Component={Life_category} />,
+      },
+      {
+        path: '/life-category-details',
+        exact: true,
+        element: <ProtectedRoutes Component={LifeCategoryDetails} />,
+      },
+      { path: '/job-opening', exact: true, element: <ProtectedRoutes Component={JobOpening} /> },
+      {
+        path: '/internship-opening',
+        exact: true,
+        element: <ProtectedRoutes Component={InternshipOpening} />,
+      },
+      {
+        path: '/office-location',
+        exact: true,
+        element: <ProtectedRoutes Component={OfficeLocation} />,
+      },
+      { path: '/contactform', exact: true, element: <ProtectedRoutes Component={ContactForm} /> },
+      { path: '/applynow', exact: true, element: <ProtectedRoutes Component={ApplyNowForm} /> },
+      { path: '/quotes', exact: true, element: <ProtectedRoutes Component={QuotesForm} /> },
       { path: '/icons', exact: true, element: <Icons /> },
       { path: '/ui/typography', exact: true, element: <TypographyPage /> },
       { path: '/ui/shadow', exact: true, element: <Shadow /> },
@@ -53,9 +70,10 @@ const Router = [
     element: <BlankLayout />,
     children: [
       { path: '404', element: <Error /> },
+      { path: '404', element: <Error /> },
       { path: '/auth/register', element: <Register /> },
       { path: '/auth/login', element: <Login /> },
-      { path: '*', element: <Navigate to="/auth/404" /> },
+      // { path: '*', element: <Navigate to="/auth/404" /> },
     ],
   },
 ];

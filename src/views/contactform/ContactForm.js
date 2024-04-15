@@ -62,12 +62,13 @@ const ContactForm = () => {
           <Table stickyHeader>
             <TableHead>
               <TableRow>
+                <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Sr No.</TableCell>
                 <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Name</TableCell>
                 <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Email</TableCell>
                 <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Phone No.</TableCell>
                 <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Website</TableCell>
                 <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Message</TableCell>
-                <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Action</TableCell>
+                {/* <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Action</TableCell> */}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -82,6 +83,7 @@ const ContactForm = () => {
                   return (
                     <>
                       <TableRow>
+                        <TableCell>{id + 1}</TableCell>
                         <TableCell>{item?.name}</TableCell>
                         <TableCell>{item?.email}</TableCell>
                         <TableCell>{item?.phone}</TableCell>
@@ -90,13 +92,13 @@ const ContactForm = () => {
                         {/* <IconButton aria-label="edit" style={{ color: 'blue' }} onClick={() => handleEdit(item)}>
                               <EditIcon />
                             </IconButton> */}
-                        <IconButton
+                        {/* <IconButton
                           aria-label="delete"
                           style={{ color: 'red' }}
                           onClick={() => handleDelete(item?.id)}
                         >
                           <DeleteIcon />
-                        </IconButton>
+                        </IconButton> */}
                       </TableRow>
                     </>
                   );

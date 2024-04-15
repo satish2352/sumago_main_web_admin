@@ -62,6 +62,7 @@ const QuotesForm = () => {
           <Table stickyHeader>
             <TableHead>
               <TableRow>
+                <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Sr No.</TableCell>
                 <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Name</TableCell>
                 <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Email</TableCell>
                 <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Phone No.</TableCell>
@@ -73,6 +74,7 @@ const QuotesForm = () => {
                 </TableCell>
                 <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Address </TableCell>
                 <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Comment</TableCell>
+                {/* <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Action</TableCell> */}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -87,6 +89,7 @@ const QuotesForm = () => {
                   return (
                     <>
                       <TableRow>
+                        <TableCell>{id + 1}</TableCell>
                         <TableCell>{item?.name}</TableCell>
                         <TableCell>{item?.email}</TableCell>
                         <TableCell>{item?.phone}</TableCell>
@@ -97,13 +100,13 @@ const QuotesForm = () => {
                         {/* <IconButton aria-label="edit" style={{ color: 'blue' }} onClick={() => handleEdit(item)}>
                               <EditIcon />
                             </IconButton> */}
-                        <IconButton
+                        {/* <IconButton
                           aria-label="delete"
                           style={{ color: 'red' }}
                           onClick={() => handleDelete(item?.id)}
                         >
                           <DeleteIcon />
-                        </IconButton>
+                        </IconButton> */}
                       </TableRow>
                     </>
                   );

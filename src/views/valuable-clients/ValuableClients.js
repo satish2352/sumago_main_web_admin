@@ -23,13 +23,14 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 const ValuableClients = () => {
+  const [id, setId] = useState();
   const [show, setShow] = useState(true);
   const [name, setName] = useState('');
   const [counter, setCounter] = useState('');
   const [errors, setErrors] = useState({});
   const [data, setData] = useState([]);
-
-  useEffect(() => {
+  const [isEdit, setIsEdit] = useState(false);
+  function findData() {
     axios
       .get('/clientCount/find')
       .then((result) => {
@@ -38,13 +39,18 @@ const ValuableClients = () => {
       .catch((err) => {
         console.log('err', err);
       });
-  }, [show]);
+  }
+  useEffect(() => {
+    findData();
+  }, [show, isEdit]);
 
   const onClick = () => {
     setShow(true);
+    setIsEdit(true);
   };
   const onClick1 = () => {
     setShow(false);
+    setIsEdit(false);
   };
 
   const validateForm = () => {
@@ -89,6 +95,7 @@ const ValuableClients = () => {
       setName('');
       setErrors({}); // Resetting errors as well
       setShow(true);
+      setIsEdit(false);
     }
   };
 
@@ -98,20 +105,36 @@ const ValuableClients = () => {
       .delete(`clientCount/delete/${clientCount}`)
       .then((response) => {
         console.log('clientCount deleted successfully');
-        axios
-          .get('/clientCount/find')
-          .then((result) => {
-            setData(result.data);
-          })
-          .catch((err) => {
-            console.log('err', err);
-          });
+        findData();
       })
       .catch((error) => {
         console.error('Error deleting clientCount:', error);
       });
   };
 
+  const handleEdit = (data) => {
+    console.log('data', data);
+    setName(data.name);
+    setCounter(data.counter);
+    setId(data.id);
+    setShow(false);
+    setIsEdit(true);
+  };
+
+  const EditSubmit = (e) => {
+    e.preventDefault();
+    let newData = { name, counter };
+    console.log('newData', newData);
+    axios
+      .put(`/clientCount/update/${id}`, newData)
+      .then((response) => {
+        console.log('clientCount updated successfully');
+      })
+      .catch((error) => {
+        console.error('Error updating clientCount:', error);
+      });
+    setShow(true);
+  };
   return (
     <PageContainer title="Valuable Clients" description="this is Sample page">
       <DashboardCard
@@ -124,6 +147,7 @@ const ValuableClients = () => {
             <Table stickyHeader>
               <TableHead>
                 <TableRow>
+                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Sr No.</TableCell>
                   <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Title</TableCell>
                   <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Counts</TableCell>
                   <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Action</TableCell>
@@ -141,11 +165,16 @@ const ValuableClients = () => {
                     return (
                       <>
                         <TableRow>
+                          <TableCell>{id + 1}</TableCell>
                           <TableCell>{item?.name}</TableCell>
                           <TableCell>{item?.counter}</TableCell>
-                          {/* <IconButton aria-label="edit" style={{ color: 'blue' }} onClick={() => handleEdit(item)}>
-                              <EditIcon />
-                            </IconButton> */}
+                          <IconButton
+                            aria-label="edit"
+                            style={{ color: 'blue' }}
+                            onClick={() => handleEdit(item)}
+                          >
+                            <EditIcon />
+                          </IconButton>
                           <IconButton
                             aria-label="delete"
                             style={{ color: 'red' }}
@@ -162,12 +191,13 @@ const ValuableClients = () => {
             </Table>
           </TableContainer>
         ) : (
-          <form onSubmit={SubmitForm}>
+          <form onSubmit={isEdit ? EditSubmit : SubmitForm}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
                   label="Name"
+                  value={name}
                   onChange={(e) => setName(e.target.value)}
                   variant="outlined"
                 />
@@ -181,6 +211,7 @@ const ValuableClients = () => {
                 <TextField
                   fullWidth
                   label="Counts"
+                  value={counter}
                   onChange={(e) => setCounter(e.target.value)}
                   variant="outlined"
                 />
@@ -191,7 +222,11 @@ const ValuableClients = () => {
                 )}
               </Grid>
               <Grid item xs={12}>
-                <Button variant="contained" type="submit" color="primary">
+                <Button
+                  variant="contained"
+                  type="submit"
+                  color={`${isEdit ? 'success' : 'primary'}`}
+                >
                   Submit
                 </Button>
               </Grid>

@@ -23,6 +23,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 const OfficeLocation = () => {
+  const [id, setId] = useState();
   const [show, setShow] = useState(true);
   const [address, setAddress] = useState('');
   const [email, setEmail] = useState('');
@@ -30,8 +31,9 @@ const OfficeLocation = () => {
   const [geolocation, setGeolocation] = useState('');
   const [errors, setErrors] = useState({});
   const [data, setData] = useState([]);
+  const [isEdit, setIsEdit] = useState(false);
 
-  useEffect(() => {
+  function findData() {
     axios
       .get('location/find')
       .then((result) => {
@@ -40,13 +42,18 @@ const OfficeLocation = () => {
       .catch((err) => {
         console.log('err', err);
       });
-  }, [show]);
+  }
+  useEffect(() => {
+    findData();
+  }, [show, isEdit]);
 
   const onClick = () => {
     setShow(true);
+    setIsEdit(true);
   };
   const onClick1 = () => {
     setShow(false);
+    setIsEdit(false);
   };
 
   const validateForm = () => {
@@ -112,18 +119,37 @@ const OfficeLocation = () => {
       .delete(`location/delete/${location}`)
       .then((response) => {
         console.log('location deleted successfully');
-        axios
-          .get('location/find')
-          .then((result) => {
-            setData(result.data);
-          })
-          .catch((err) => {
-            console.log('err', err);
-          });
       })
       .catch((error) => {
         console.error('Error deleting location:', error);
       });
+  };
+
+  const handleEdit = (data) => {
+    console.log('data', data);
+
+    setAddress(data.address);
+    setEmail(data.email);
+    setContact(data.contact);
+    setGeolocation(data.geolocation);
+    setId(data.id);
+    setShow(false);
+    setIsEdit(true);
+  };
+
+  const EditSubmit = (e) => {
+    e.preventDefault();
+    let newData = { address, email, contact, geolocation };
+    console.log('newData', newData);
+    axios
+      .put(`/location/update/${id}`, newData)
+      .then((response) => {
+        console.log('location updated successfully');
+      })
+      .catch((error) => {
+        console.error('Error updating location:', error);
+      });
+    setShow(true);
   };
 
   return (
@@ -138,6 +164,7 @@ const OfficeLocation = () => {
             <Table stickyHeader>
               <TableHead>
                 <TableRow>
+                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Sr No.</TableCell>
                   <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Address</TableCell>
                   <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Email</TableCell>
                   <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Phone No.</TableCell>
@@ -157,13 +184,18 @@ const OfficeLocation = () => {
                     return (
                       <>
                         <TableRow>
+                          <TableCell>{id + 1}</TableCell>
                           <TableCell>{item?.address}</TableCell>
                           <TableCell>{item?.email}</TableCell>
                           <TableCell>{item?.contact}</TableCell>
                           <TableCell>{item?.geolocation}</TableCell>
-                          {/* <IconButton aria-label="edit" style={{ color: 'blue' }} onClick={() => handleEdit(item)}>
-                              <EditIcon />
-                            </IconButton> */}
+                          <IconButton
+                            aria-label="edit"
+                            style={{ color: 'blue' }}
+                            onClick={() => handleEdit(item)}
+                          >
+                            <EditIcon />
+                          </IconButton>
                           <IconButton
                             aria-label="delete"
                             style={{ color: 'red' }}
@@ -180,12 +212,13 @@ const OfficeLocation = () => {
             </Table>
           </TableContainer>
         ) : (
-          <form onSubmit={SubmitForm}>
+          <form onSubmit={isEdit ? EditSubmit : SubmitForm}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
                   label="Address"
+                  value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   variant="outlined"
                 />
@@ -199,6 +232,7 @@ const OfficeLocation = () => {
                 <TextField
                   fullWidth
                   label="Email"
+                  value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   variant="outlined"
                 />
@@ -212,6 +246,7 @@ const OfficeLocation = () => {
                 <TextField
                   fullWidth
                   label="Phone No."
+                  value={contact}
                   onChange={(e) => setContact(e.target.value)}
                   variant="outlined"
                 />
@@ -225,6 +260,7 @@ const OfficeLocation = () => {
                 <TextField
                   fullWidth
                   label="Location"
+                  value={geolocation}
                   onChange={(e) => setGeolocation(e.target.value)}
                   variant="outlined"
                 />
@@ -235,7 +271,11 @@ const OfficeLocation = () => {
                 )}
               </Grid>
               <Grid item xs={12}>
-                <Button variant="contained" type="submit" color="primary">
+                <Button
+                  variant="contained"
+                  type="submit"
+                  color={`${isEdit ? 'success' : 'primary'}`}
+                >
                   Submit
                 </Button>
               </Grid>
