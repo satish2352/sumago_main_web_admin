@@ -19,7 +19,6 @@ const AuthLogin = ({ title, subtitle, subtext }) => {
   let nevigate = useNavigate();
 
   const handleSubmit = async () => {
-    alert('hello');
     let newData = { email, password };
     axios
       .post('/auth/login', newData)

@@ -83,22 +83,22 @@ const Menuitems = [
     icon: IconAperture,
     href: '/contactform',
   },
-  {
-    navlabel: true,
-    subheader: 'Auth',
-  },
-  {
-    id: uniqueId(),
-    title: 'Login',
-    icon: IconLogin,
-    href: '/auth/login',
-  },
-  {
-    id: uniqueId(),
-    title: 'Register',
-    icon: IconUserPlus,
-    href: '/auth/register',
-  },
+  // {
+  //   navlabel: true,
+  //   subheader: 'Auth',
+  // },
+  // {
+  //   id: uniqueId(),
+  //   title: 'Login',
+  //   icon: IconLogin,
+  //   href: '/auth/login',
+  // },
+  // {
+  //   id: uniqueId(),
+  //   title: 'Register',
+  //   icon: IconUserPlus,
+  //   href: '/auth/register',
+  // },
   // {
   //   navlabel: true,
   //   subheader: 'Home',
