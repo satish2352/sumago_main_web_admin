@@ -19,18 +19,29 @@ const AuthLogin = ({ title, subtitle, subtext }) => {
   let nevigate = useNavigate();
 
   const handleSubmit = async () => {
+    alert('hello');
     let newData = { email, password };
-    console.log('newData', newData);
-    try {
-      const response = await axios.post('/auth/login', newData);
-      console.log(response.data); // Handle success
-      localStorage.setItem('login', true);
-      nevigate('/quotes');
-      // Redirect or set authentication status in your application
-    } catch (error) {
-      alert(error.response.data.message);
-      setError(error.response.data.message); // Handle error
-    }
+    axios
+      .post('/auth/login', newData)
+      .then((res) => {
+        localStorage.setItem('login', true);
+        nevigate('/quotes');
+      })
+      .catch((err) => {
+        console.log("err", err);
+        // alert(error.response.data.message);
+        // setError(error.response.data.message);
+      });
+    // try {
+    //   const response = await axios.post('/auth/login', newData);
+    //   console.log(response); // Handle success
+    //   localStorage.setItem('login', true);
+    //   nevigate('/quotes');
+    //   // Redirect or set authentication status in your application
+    // } catch (error) {
+    //   alert(error.response.data.message);
+    //   setError(error.response.data.message); // Handle error
+    // }
   };
   return (
     <>

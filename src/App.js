@@ -11,9 +11,9 @@ function App() {
   const routing = useRoutes(Router);
   const theme = baselightTheme;
 
-  useEffect(() => {
+
     axios.defaults.baseURL = process.env.REACT_APP_API_BASE_URL;
-  }, []);
+
   return (
     <ThemeProvider theme={theme}>
 
