@@ -26,7 +26,7 @@ const ContactForm = () => {
   const [data, setData] = useState([]);
   useEffect(() => {
     axios
-      .get('contact/records')
+      .get('/contact/getrecords')
       .then((result) => {
         setData(result.data);
       })
@@ -38,11 +38,11 @@ const ContactForm = () => {
   const handleDelete = (contact) => {
     console.log('contact', contact);
     axios
-      .delete(`contact/records/${contact}`)
+      .delete(`/contact/records/${contact}`)
       .then((response) => {
         console.log('contact deleted successfully');
         axios
-          .get('contact/records')
+          .get('/contact/getrecords')
           .then((result) => {
             setData(result.data);
           })

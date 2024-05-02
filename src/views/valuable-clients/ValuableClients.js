@@ -32,7 +32,7 @@ const ValuableClients = () => {
   const [isEdit, setIsEdit] = useState(false);
   function findData() {
     axios
-      .get('/clientCount/find')
+      .get('/clientCount/getClientsRecord')
       .then((result) => {
         setData(result.data);
       })
@@ -86,7 +86,8 @@ const ValuableClients = () => {
         })
         .then((resp) => {
           console.log('resp', resp);
-          alert('Form submitted successfully');
+          alert('Data added successfully');
+          findData();
         })
         .catch((err) => {
           console.log('err', err);
@@ -104,7 +105,7 @@ const ValuableClients = () => {
     axios
       .delete(`clientCount/delete/${clientCount}`)
       .then((response) => {
-        console.log('clientCount deleted successfully');
+        console.log('Data deleted successfully');
         findData();
       })
       .catch((error) => {
@@ -129,11 +130,13 @@ const ValuableClients = () => {
       .put(`/clientCount/update/${id}`, newData)
       .then((response) => {
         console.log('clientCount updated successfully');
+        findData();
+        setShow(true);
+        console.log('Data edited successfully');
       })
       .catch((error) => {
         console.error('Error updating clientCount:', error);
       });
-    setShow(true);
   };
   return (
     <PageContainer title="Valuable Clients" description="this is Sample page">

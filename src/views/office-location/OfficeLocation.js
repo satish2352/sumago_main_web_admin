@@ -35,7 +35,7 @@ const OfficeLocation = () => {
 
   function findData() {
     axios
-      .get('location/find')
+      .get('location/getlocation')
       .then((result) => {
         setData(result.data);
       })
@@ -99,7 +99,9 @@ const OfficeLocation = () => {
         })
         .then((resp) => {
           console.log('resp', resp);
-          alert('Form submitted successfully');
+          alert('Data submitted successfully');
+          setShow(true);
+          findData();
         })
         .catch((err) => {
           console.log('err', err);
@@ -109,7 +111,6 @@ const OfficeLocation = () => {
       setContact('');
       setGeolocation('');
       setErrors({}); // Resetting errors as well
-      setShow(true);
     }
   };
 
@@ -118,7 +119,8 @@ const OfficeLocation = () => {
     axios
       .delete(`location/delete/${location}`)
       .then((response) => {
-        console.log('location deleted successfully');
+        console.log('data deleted successfully');
+        findData();
       })
       .catch((error) => {
         console.error('Error deleting location:', error);
@@ -144,12 +146,13 @@ const OfficeLocation = () => {
     axios
       .put(`/location/update/${id}`, newData)
       .then((response) => {
-        console.log('location updated successfully');
+        findData();
+        setShow(true);
+        console.log('data edited successfully');
       })
       .catch((error) => {
         console.error('Error updating location:', error);
       });
-    setShow(true);
   };
 
   return (

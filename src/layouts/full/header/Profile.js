@@ -88,7 +88,7 @@ const Profile = () => {
             to="/auth/login"
             variant="outlined"
             color="primary"
-            onClick={() => localStorage.removeItem('login')}
+            onClick={() => localStorage.clear()}
             component={Link}
             fullWidth
           >

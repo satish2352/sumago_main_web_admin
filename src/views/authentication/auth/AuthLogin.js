@@ -23,6 +23,8 @@ const AuthLogin = ({ title, subtitle, subtext }) => {
     axios
       .post('/auth/login', newData)
       .then((res) => {
+        console.log("res", res.data.token);
+        localStorage.setItem("token", res?.data?.token)
         localStorage.setItem('login', true);
         nevigate('/quotes');
       })
