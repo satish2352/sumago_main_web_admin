@@ -19,14 +19,16 @@ const AuthLogin = ({ title, subtitle, subtext }) => {
   let nevigate = useNavigate();
 
   const handleSubmit = async () => {
+    nevigate('/');
     let newData = { email, password };
     axios
       .post('/auth/login', newData)
       .then((res) => {
+        
         console.log("res", res.data.token);
         localStorage.setItem("token", res?.data?.token)
         localStorage.setItem('login', true);
-        nevigate('/quotes');
+       
       })
       .catch((err) => {
         console.log("err", err);

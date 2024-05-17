@@ -97,6 +97,9 @@ const QuotesForm = () => {
                         <TableCell>{item?.other_service}</TableCell>
                         <TableCell>{item?.address}</TableCell>
                         <TableCell>{item?.comment}</TableCell>
+                        <IconButton aria-label="delete" style={{ color: 'red' }} onClick={() => handleDelete(item?.id)}>
+                          <DeleteIcon />
+                        </IconButton>
                         {/* <IconButton aria-label="edit" style={{ color: 'blue' }} onClick={() => handleEdit(item)}>
                               <EditIcon />
                             </IconButton> */}
