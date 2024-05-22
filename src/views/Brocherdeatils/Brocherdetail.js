@@ -22,11 +22,11 @@ import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import * as XLSX from 'xlsx';
-const ApplyNowForm = () => {
+const  Brocherdetail = () => {
   const [data, setData] = useState([]);
   useEffect(() => {
     axios
-      .get('applynow/find')
+      .get('/broucherDownload/getBroucherDownloadRecord')
       .then((result) => {
         setData(result.data);
       })
@@ -35,26 +35,7 @@ const ApplyNowForm = () => {
       });
   }, []);
 
-  const handleDelete = (applynow) => {
-    console.log('applynow', applynow);
-    axios
-      .delete(`applynow/delete/${applynow}`)
-      .then((response) => {
-        console.log('applynow deleted successfully');
-        alert('data deleted successfully ');
-        axios
-          .get('applynow/find')
-          .then((result) => {
-            setData(result.data);
-          })
-          .catch((err) => {
-            console.log('err', err);
-          });
-      })
-      .catch((error) => {
-        console.error('Error deleting applynow:', error);
-      });
-  };
+ 
   const downloadExcel = () => {
     const worksheet = XLSX.utils.json_to_sheet(data);
     const workbook = XLSX.utils.book_new();
@@ -156,4 +137,5 @@ const ApplyNowForm = () => {
   );
 };
 
-export default ApplyNowForm;
+
+export default Brocherdetail

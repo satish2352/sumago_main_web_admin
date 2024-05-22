@@ -30,6 +30,7 @@ const JobOpening = () => {
   const [qualification, setQualification] = useState('');
   const [errors, setErrors] = useState({});
   const [data, setData] = useState([]);
+  const [editingId, setEditingId] = useState(null);
 
   useEffect(() => {
     axios
@@ -44,6 +45,12 @@ const JobOpening = () => {
 
   const onClick = () => {
     setShow(true);
+    setDesignation('');
+    setOpening('');
+    setLocation('');
+    setQualification('');
+    setErrors({});
+    setEditingId(null);
   };
   const onClick1 = () => {
     setShow(false);
@@ -54,29 +61,30 @@ const JobOpening = () => {
     let isValid = true;
 
     if (!opening.trim()) {
-      errors.opening = 'job opening is required';
+      errors.opening = 'Job opening is required';
       isValid = false;
     } else if (!/^\d+$/.test(opening.trim())) {
-      errors.opening = 'job opening must contain only numbers';
+      errors.opening = 'Job opening must contain only numbers';
       isValid = false;
     }
 
     if (!designation.trim()) {
-      errors.designation = 'designation is required';
+      errors.designation = 'Designation is required';
       isValid = false;
     }
     if (!location.trim()) {
-      errors.location = 'location is required';
+      errors.location = 'Location is required';
       isValid = false;
     }
     if (!qualification.trim()) {
-      errors.qualification = 'qualification is required';
+      errors.qualification = 'Qualification is required';
       isValid = false;
     }
 
     setErrors(errors);
     return isValid;
   };
+
   const SubmitForm = (e) => {
     e.preventDefault();
     if (validateForm()) {
@@ -86,24 +94,42 @@ const JobOpening = () => {
         location,
         qualification,
       };
-      axios
-        .post('jobs/create', newData, {
-          headers: { 'Content-Type': 'application/json' },
-        })
+
+      const url = editingId ? `jobs/update/${editingId}` : 'jobs/create';
+      const method = editingId ? 'put' : 'post';
+
+      axios({
+        method: method,
+        url: url,
+        data: newData,
+        headers: { 'Content-Type': 'application/json' },
+      })
         .then((resp) => {
           console.log('resp', resp);
           alert('Form submitted successfully');
+          setShow(true);
+          setEditingId(null);
         })
         .catch((err) => {
           console.log('err', err);
+          alert(`Error: ${err.response?.data?.message || 'Something went wrong!'}`);
         });
+
       setDesignation('');
       setOpening('');
       setLocation('');
       setQualification('');
-      setErrors({}); // Resetting errors as well
-      setShow(true);
+      setErrors({});
     }
+  };
+
+  const handleEdit = (item) => {
+    setDesignation(item.designation);
+    setOpening(item.opening);
+    setLocation(item.location);
+    setQualification(item.qualification);
+    setEditingId(item.id);
+    setShow(false);
   };
 
   const handleDelete = (jobs) => {
@@ -111,7 +137,7 @@ const JobOpening = () => {
     axios
       .delete(`jobs/delete/${jobs}`)
       .then((response) => {
-        console.log('jobs deleted successfully');
+        console.log('Job deleted successfully');
         axios
           .get('jobs/find')
           .then((result) => {
@@ -122,7 +148,7 @@ const JobOpening = () => {
           });
       })
       .catch((error) => {
-        console.error('Error deleting jobs:', error);
+        console.error('Error deleting job:', error);
       });
   };
 
@@ -138,47 +164,43 @@ const JobOpening = () => {
             <Table stickyHeader>
               <TableHead>
                 <TableRow>
-                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>
-                    Designation
-                  </TableCell>
+                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Designation</TableCell>
                   <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Opening</TableCell>
                   <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Location</TableCell>
-                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>
-                    Qualification
-                  </TableCell>
+                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Qualification</TableCell>
                   <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Action</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {/* Example data */}
-                {data.length == 0 ? (
+                {data.length === 0 ? (
                   <div style={{ marginLeft: '10px', color: 'red' }}>
                     <h3>No data found</h3>
                   </div>
                 ) : (
-                  data.map((item, id) => {
-                    console.log('item', item);
-                    return (
-                      <>
-                        <TableRow>
-                          <TableCell>{item?.designation}</TableCell>
-                          <TableCell>{item?.opening}</TableCell>
-                          <TableCell>{item?.location}</TableCell>
-                          <TableCell>{item?.qualification}</TableCell>
-                          {/* <IconButton aria-label="edit" style={{ color: 'blue' }} onClick={() => handleEdit(item)}>
-                              <EditIcon />
-                            </IconButton> */}
-                          <IconButton
-                            aria-label="delete"
-                            style={{ color: 'red' }}
-                            onClick={() => handleDelete(item?.id)}
-                          >
-                            <DeleteIcon />
-                          </IconButton>
-                        </TableRow>
-                      </>
-                    );
-                  })
+                  data.map((item, id) => (
+                    <TableRow key={id}>
+                      <TableCell>{item?.designation}</TableCell>
+                      <TableCell>{item?.opening}</TableCell>
+                      <TableCell>{item?.location}</TableCell>
+                      <TableCell>{item?.qualification}</TableCell>
+                      <TableCell>
+                        <IconButton
+                          aria-label="edit"
+                          style={{ color: 'blue' }}
+                          onClick={() => handleEdit(item)}
+                        >
+                          <EditIcon />
+                        </IconButton>
+                        <IconButton
+                          aria-label="delete"
+                          style={{ color: 'red' }}
+                          onClick={() => handleDelete(item?.id)}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))
                 )}
               </TableBody>
             </Table>
@@ -190,6 +212,7 @@ const JobOpening = () => {
                 <TextField
                   fullWidth
                   label="Designation"
+                  value={designation}
                   onChange={(e) => setDesignation(e.target.value)}
                   variant="outlined"
                 />
@@ -203,6 +226,7 @@ const JobOpening = () => {
                 <TextField
                   fullWidth
                   label="Opening"
+                  value={opening}
                   onChange={(e) => setOpening(e.target.value)}
                   variant="outlined"
                 />
@@ -216,6 +240,7 @@ const JobOpening = () => {
                 <TextField
                   fullWidth
                   label="Location"
+                  value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   variant="outlined"
                 />
@@ -229,6 +254,7 @@ const JobOpening = () => {
                 <TextField
                   fullWidth
                   label="Qualification"
+                  value={qualification}
                   onChange={(e) => setQualification(e.target.value)}
                   variant="outlined"
                 />
@@ -240,7 +266,7 @@ const JobOpening = () => {
               </Grid>
               <Grid item xs={12}>
                 <Button variant="contained" type="submit" color="primary">
-                  Submit
+                  {editingId ? 'Update' : 'Submit'}
                 </Button>
               </Grid>
             </Grid>

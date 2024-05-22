@@ -22,7 +22,7 @@ import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-const LifeCategory = () => {
+const Funcategory = () => {
   const [show, setShow] = useState(false);
   const [category, setCategory] = useState('');
   const [errors, setErrors] = useState({});
@@ -31,7 +31,7 @@ const LifeCategory = () => {
 
   useEffect(() => {
     axios
-      .get('/life_category/find')
+      .get('/culture_category/getCultureCategory')
       .then((result) => {
         setData(result.data);
       })
@@ -207,4 +207,5 @@ const LifeCategory = () => {
   );
 };
 
-export default LifeCategory;
+
+export default Funcategory

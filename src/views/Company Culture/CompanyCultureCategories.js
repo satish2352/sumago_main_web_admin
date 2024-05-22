@@ -22,7 +22,7 @@ import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-const LifeCategory = () => {
+const CompanyCultureCategories = () => {
   const [show, setShow] = useState(false);
   const [category, setCategory] = useState('');
   const [errors, setErrors] = useState({});
@@ -31,7 +31,7 @@ const LifeCategory = () => {
 
   useEffect(() => {
     axios
-      .get('/life_category/find')
+      .get('/culture_category/getCultureCategory')
       .then((result) => {
         setData(result.data);
       })
@@ -71,7 +71,7 @@ const LifeCategory = () => {
       };
       if (editingId) {
         axios
-          .put(`/life_category/update/${editingId}`, newData, {
+          .put(`/culture_category/update/${editingId}`, newData, {
             headers: { 'Content-Type': 'application/json' },
           })
           .then((resp) => {
@@ -85,7 +85,7 @@ const LifeCategory = () => {
           });
       } else {
         axios
-          .post('/life_category/create', newData, {
+          .post('/culture_category/createCultureCategory', newData, {
             headers: { 'Content-Type': 'application/json' },
           })
           .then((resp) => {
@@ -111,11 +111,11 @@ const LifeCategory = () => {
   const handleDelete = (life_category) => {
     console.log('life_category', life_category);
     axios
-      .delete(`life_category/delete/${life_category}`)
+      .delete(`/culture_category/delete/${life_category}`)
       .then((response) => {
         console.log('life_category deleted successfully');
         axios
-          .get('/life_category/find')
+          .get('/culture_category/getCultureCategory')
           .then((result) => {
             setData(result.data);
           })
@@ -207,4 +207,5 @@ const LifeCategory = () => {
   );
 };
 
-export default LifeCategory;
+
+export default CompanyCultureCategories

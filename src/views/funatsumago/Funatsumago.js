@@ -22,16 +22,17 @@ import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-const LifeCategory = () => {
+const Funatsumago = () => {
   const [show, setShow] = useState(false);
   const [category, setCategory] = useState('');
+  const [img, setImg] = useState(null);
   const [errors, setErrors] = useState({});
   const [data, setData] = useState([]);
   const [editingId, setEditingId] = useState(null);
 
   useEffect(() => {
     axios
-      .get('/life_category/find')
+      .get('culture_category_details/getallCultureDetails')
       .then((result) => {
         setData(result.data);
       })
@@ -43,6 +44,7 @@ const LifeCategory = () => {
   const onClick = () => {
     setShow(true);
     setCategory('');
+    setImg(null);
     setErrors({});
     setEditingId(null);
   };
@@ -59,6 +61,11 @@ const LifeCategory = () => {
       isValid = false;
     }
 
+    if (!img && !editingId) {
+      errors.img = 'Image is required';
+      isValid = false;
+    }
+
     setErrors(errors);
     return isValid;
   };
@@ -66,27 +73,30 @@ const LifeCategory = () => {
   const SubmitForm = (e) => {
     e.preventDefault();
     if (validateForm()) {
-      let newData = {
-        category: category,
-      };
+      const formData = new FormData();
+      formData.append('category', category);
+      if (img) {
+        formData.append('img', img);
+      }
+
       if (editingId) {
         axios
-          .put(`/life_category/update/${editingId}`, newData, {
-            headers: { 'Content-Type': 'application/json' },
+          .put(`culture_category_details/update/${editingId}`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
           })
           .then((resp) => {
             console.log('resp', resp);
             alert('Category updated successfully');
-            setEditingId(null);
             setShow(true);
+            setEditingId(null);
           })
           .catch((err) => {
             console.log('err', err);
           });
       } else {
         axios
-          .post('/life_category/create', newData, {
-            headers: { 'Content-Type': 'application/json' },
+          .post('culture_category_details/createCultureDetails', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
           })
           .then((resp) => {
             console.log('resp', resp);
@@ -98,7 +108,8 @@ const LifeCategory = () => {
           });
       }
       setCategory('');
-      setErrors({}); // Resetting errors as well
+      setImg(null);
+      setErrors({});
     }
   };
 
@@ -108,14 +119,14 @@ const LifeCategory = () => {
     setShow(false);
   };
 
-  const handleDelete = (life_category) => {
-    console.log('life_category', life_category);
+  const handleDelete = (life_category_details) => {
+    console.log('culture_category_details', life_category_details);
     axios
-      .delete(`life_category/delete/${life_category}`)
+      .delete(`culture_category_details/delete/${life_category_details}`)
       .then((response) => {
-        console.log('life_category deleted successfully');
+        console.log('Life category details deleted successfully');
         axios
-          .get('/life_category/find')
+          .get('culture_category_details/getallCultureDetails')
           .then((result) => {
             setData(result.data);
           })
@@ -124,15 +135,15 @@ const LifeCategory = () => {
           });
       })
       .catch((error) => {
-        console.error('Error deleting life_category:', error);
+        console.error('Error deleting life_category_details:', error);
       });
   };
 
   return (
-    <PageContainer title="Category" description="This is a sample page">
+    <PageContainer title="Life Category Details" description="this is Sample page">
       <DashboardCard
-        title="Category"
-        buttonName={show ? 'Add Category' : 'View Category'}
+        title="Life Category Details"
+        buttonName={show ? 'Add Life Category Details' : 'View Life Category Details'}
         onClick={show ? onClick1 : onClick}
       >
         {show ? (
@@ -141,6 +152,7 @@ const LifeCategory = () => {
               <TableHead>
                 <TableRow>
                   <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Category</TableCell>
+                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Profile Image</TableCell>
                   <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Action</TableCell>
                 </TableRow>
               </TableHead>
@@ -154,6 +166,9 @@ const LifeCategory = () => {
                     return (
                       <TableRow key={id}>
                         <TableCell>{item?.category}</TableCell>
+                        <TableCell>
+                          <img src={item?.img} alt={item?.category} style={{ width: '50px', height: '50px' }} />
+                        </TableCell>
                         <TableCell>
                           <IconButton
                             aria-label="edit"
@@ -195,6 +210,22 @@ const LifeCategory = () => {
                 )}
               </Grid>
               <Grid item xs={12}>
+                <div>
+                  <FormLabel style={{ marginBottom: '10px' }}>File Upload</FormLabel>
+                  <Input
+                    type="file"
+                    onChange={(e) => setImg(e.target.files[0])}
+                    fullWidth
+                    style={{ marginTop: '10px' }}
+                  />
+                  {errors.img && (
+                    <span className="error" style={{ color: 'red' }}>
+                      {errors.img}
+                    </span>
+                  )}
+                </div>
+              </Grid>
+              <Grid item xs={12}>
                 <Button variant="contained" type="submit" color="primary">
                   {editingId ? 'Update' : 'Submit'}
                 </Button>
@@ -207,4 +238,5 @@ const LifeCategory = () => {
   );
 };
 
-export default LifeCategory;
+
+export default Funatsumago

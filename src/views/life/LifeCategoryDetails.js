@@ -1,21 +1,3 @@
-// import React from 'react';
-// import { Typography } from '@mui/material';
-// import PageContainer from 'src/components/container/PageContainer';
-// import DashboardCard from '../../components/shared/DashboardCard';
-
-// const SamplePage = () => {
-//   return (
-//     <PageContainer title="Sample Page" description="this is Sample page">
-
-//       <DashboardCard title="Sample Page">
-
-//       </DashboardCard>
-//     </PageContainer>
-//   );
-// };
-
-// export default SamplePage;
-
 import React, { useEffect, useState } from 'react';
 import {
   Typography,
@@ -32,6 +14,7 @@ import {
   TableRow,
   TableCell,
   TableBody,
+  MenuItem,
 } from '@mui/material';
 import PageContainer from 'src/components/container/PageContainer';
 import DashboardCard from '../../components/shared/DashboardCard';
@@ -43,10 +26,23 @@ import DeleteIcon from '@mui/icons-material/Delete';
 const LifeCategoryDetails = () => {
   const [show, setShow] = useState(false);
   const [category, setCategory] = useState('');
-  const [img, setImg] = useState();
+  const [img, setImg] = useState(null);
   const [errors, setErrors] = useState({});
   const [data, setData] = useState([]);
-
+  const [editingId, setEditingId] = useState(null);
+  const [categories, setCategories] = useState([]);
+  useEffect(() => {
+    axios
+      .get('/life_category/find')
+      .then((result) => {
+        // Assuming result.data contains an array of category objects like [{ id: 1, name: 'Category 1' }, ...]
+        setCategories(result.data);
+        console.log(result.data)
+      })
+      .catch((err) => {
+        console.log('Error fetching categories:', err);
+      });
+  }, []);
   useEffect(() => {
     axios
       .get('/life_category_details/find_all')
@@ -60,6 +56,10 @@ const LifeCategoryDetails = () => {
 
   const onClick = () => {
     setShow(true);
+    setCategory('');
+    setImg(null);
+    setErrors({});
+    setEditingId(null);
   };
   const onClick1 = () => {
     setShow(false);
@@ -70,40 +70,66 @@ const LifeCategoryDetails = () => {
     let isValid = true;
 
     if (!category.trim()) {
-      errors.category = 'category is required';
+      errors.category = 'Category is required';
       isValid = false;
     }
 
-    if (!img) {
-      errors.img = 'image is required';
+    if (!img && !editingId) {
+      errors.img = 'Image is required';
       isValid = false;
     }
+
     setErrors(errors);
     return isValid;
   };
+
   const SubmitForm = (e) => {
     e.preventDefault();
     if (validateForm()) {
       const formData = new FormData();
       formData.append('category', category);
-      formData.append('img', img);
-      console.log('formData', formData);
-      axios
-        .post('life_category_details/create', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        })
-        .then((resp) => {
-          console.log('resp', resp);
-          alert('Form submitted successfully');
-        })
-        .catch((err) => {
-          console.log('err', err);
-        });
+      if (img) {
+        formData.append('img', img);
+      }
+
+      if (editingId) {
+        axios
+          .put(`life_category_details/update/${editingId}`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+          })
+          .then((resp) => {
+            console.log('resp', resp);
+            alert('Category updated successfully');
+            setShow(true);
+            setEditingId(null);
+          })
+          .catch((err) => {
+            console.log('err', err);
+          });
+      } else {
+        axios
+          .post('life_category_details/create', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+          })
+          .then((resp) => {
+            console.log('resp', resp);
+            alert('Form submitted successfully');
+            setShow(true);
+          })
+          .catch((err) => {
+            console.log('err', err);
+          });
+      }
       setCategory('');
       setImg(null);
-      setErrors({}); // Resetting errors as well
-      setShow(true);
+      setErrors({});
     }
+  };
+
+  const handleEdit = (item) => {
+    setCategory(item.category);
+    setEditingId(item.id);
+    setShow(false);
   };
 
   const handleDelete = (life_category_details) => {
@@ -111,7 +137,7 @@ const LifeCategoryDetails = () => {
     axios
       .delete(`life_category_details/delete/${life_category_details}`)
       .then((response) => {
-        console.log('Testimonial deleted successfully');
+        console.log('Life category details deleted successfully');
         axios
           .get('/life_category_details/find_all')
           .then((result) => {
@@ -139,29 +165,31 @@ const LifeCategoryDetails = () => {
               <TableHead>
                 <TableRow>
                   <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Category</TableCell>
-                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>
-                    Profile Image
-                  </TableCell>
+                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Profile Image</TableCell>
                   <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Action</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {/* Example data */}
-                {data.length == 0 ? (
+                {data.length === 0 ? (
                   <div style={{ marginLeft: '10px', color: 'red' }}>
                     <h3>No data found</h3>
                   </div>
                 ) : (
                   data.map((item, id) => {
-                    console.log('item', item);
                     return (
-                      <>
-                        <TableRow>
-                          <TableCell>{item?.category}</TableCell>
-                          <TableCell>{item?.img}</TableCell>
-                          {/* <IconButton aria-label="edit" style={{ color: 'blue' }} onClick={() => handleEdit(item)}>
-                              <EditIcon />
-                            </IconButton> */}
+                      <TableRow key={id}>
+                        <TableCell>{item?.category}</TableCell>
+                        <TableCell>
+                          <img src={item?.img} alt={item?.category} style={{ width: '50px', height: '50px' }} />
+                        </TableCell>
+                        <TableCell>
+                          <IconButton
+                            aria-label="edit"
+                            style={{ color: 'blue' }}
+                            onClick={() => handleEdit(item)}
+                          >
+                            <EditIcon />
+                          </IconButton>
                           <IconButton
                             aria-label="delete"
                             style={{ color: 'red' }}
@@ -169,8 +197,8 @@ const LifeCategoryDetails = () => {
                           >
                             <DeleteIcon />
                           </IconButton>
-                        </TableRow>
-                      </>
+                        </TableCell>
+                      </TableRow>
                     );
                   })
                 )}
@@ -180,20 +208,23 @@ const LifeCategoryDetails = () => {
         ) : (
           <form onSubmit={SubmitForm}>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={12}>
+              <Grid item xs={12}>
                 <TextField
+                  select
                   fullWidth
                   label="Category"
+                  value={category}
                   onChange={(e) => setCategory(e.target.value)}
                   variant="outlined"
-                />
-                {errors.category && (
-                  <span className="error" style={{ color: 'red' }}>
-                    {errors.category}
-                  </span>
-                )}
+                >
+                  {categories.map((cat) => (
+                    <MenuItem key={cat.id} value={cat.category}>
+                      {cat.category} {/* Display the category name here */}
+                    </MenuItem>
+                  ))}
+                </TextField>
               </Grid>
-              <Grid item xs={12} sm={12}>
+              <Grid item xs={12}>
                 <div>
                   <FormLabel style={{ marginBottom: '10px' }}>File Upload</FormLabel>
                   <Input
@@ -211,7 +242,7 @@ const LifeCategoryDetails = () => {
               </Grid>
               <Grid item xs={12}>
                 <Button variant="contained" type="submit" color="primary">
-                  Submit
+                  {editingId ? 'Update' : 'Submit'}
                 </Button>
               </Grid>
             </Grid>

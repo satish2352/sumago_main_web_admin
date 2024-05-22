@@ -1,12 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import {
   Typography,
-  TextField,
   Button,
   Grid,
-  Input,
-  FormControl,
-  FormLabel,
   TableContainer,
   Paper,
   Table,
@@ -14,16 +10,17 @@ import {
   TableRow,
   TableCell,
   TableBody,
+  IconButton,
 } from '@mui/material';
 import PageContainer from 'src/components/container/PageContainer';
 import DashboardCard from '../../components/shared/DashboardCard';
 import axios from 'axios';
-import IconButton from '@mui/material/IconButton';
-import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import * as XLSX from 'xlsx';
 
 const QuotesForm = () => {
   const [data, setData] = useState([]);
+
   useEffect(() => {
     axios
       .get('quotes/find')
@@ -36,84 +33,85 @@ const QuotesForm = () => {
   }, []);
 
   const handleDelete = (quotes) => {
-    console.log('Quotes', quotes);
     axios
       .delete(`quotes/delete/${quotes}`)
-      .then((response) => {
-        console.log('Quotes deleted successfully');
+      .then(() => {
+        console.log('Quote deleted successfully');
         axios
           .get('quotes/find')
           .then((result) => {
             setData(result.data);
           })
           .catch((err) => {
-            console.log('err', err);
+            console.log('Error fetching quotes:', err);
           });
       })
       .catch((error) => {
-        console.error('Error deleting Quotes:', error);
+        console.error('Error deleting quote:', error);
       });
   };
 
+  const downloadExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Quotes');
+    XLSX.writeFile(workbook, 'QuotesData.xlsx');
+  };
+
   return (
-    <PageContainer title="Quotes Form" description="this is Sample page">
-      <DashboardCard title="Quotes Form">
-        <TableContainer component={Paper}>
-          <Table stickyHeader>
+    <PageContainer title="Quotes Form" description="This is Sample page">
+      <DashboardCard>
+        <Grid container justifyContent="space-between" alignItems="center" style={{ marginBottom: '20px' }}>
+          <Grid item>
+            <Typography variant="h6">Quotes Form</Typography>
+          </Grid>
+          <Grid item>
+            <Button variant="contained" color="primary" onClick={downloadExcel}>
+              Download Excel
+            </Button>
+          </Grid>
+        </Grid>
+
+        <TableContainer component={Paper} style={{ maxHeight: '70vh' }}> {/* Adjust maxHeight as needed */}
+          <Table>
             <TableHead>
               <TableRow>
-                <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Sr No.</TableCell>
-                <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Name</TableCell>
-                <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Email</TableCell>
-                <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Phone No.</TableCell>
-                <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>
-                  Type of Services:
-                </TableCell>
-                <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>
-                  Other Service
-                </TableCell>
-                <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Address </TableCell>
-                <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Comment</TableCell>
-                {/* <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Action</TableCell> */}
+                <TableCell>Sr No.</TableCell>
+                <TableCell>Name</TableCell>
+                <TableCell>Email</TableCell>
+                <TableCell>Phone No.</TableCell>
+                <TableCell>Type of Services</TableCell>
+                <TableCell>Other Service</TableCell>
+                <TableCell>Address</TableCell>
+                <TableCell>Comment</TableCell>
+                <TableCell>Action</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {/* Example data */}
-              {data.length == 0 ? (
-                <div style={{ marginLeft: '10px', color: 'red' }}>
-                  <h3>No data found</h3>
-                </div>
+              {data.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={9} style={{ textAlign: 'center', color: 'red' }}>
+                    <Typography variant="h6">No data found</Typography>
+                  </TableCell>
+                </TableRow>
               ) : (
-                data.map((item, id) => {
-                  console.log('item', item);
-                  return (
-                    <>
-                      <TableRow>
-                        <TableCell>{id + 1}</TableCell>
-                        <TableCell>{item?.name}</TableCell>
-                        <TableCell>{item?.email}</TableCell>
-                        <TableCell>{item?.phone}</TableCell>
-                        <TableCell>{item?.service}</TableCell>
-                        <TableCell>{item?.other_service}</TableCell>
-                        <TableCell>{item?.address}</TableCell>
-                        <TableCell>{item?.comment}</TableCell>
-                        <IconButton aria-label="delete" style={{ color: 'red' }} onClick={() => handleDelete(item?.id)}>
-                          <DeleteIcon />
-                        </IconButton>
-                        {/* <IconButton aria-label="edit" style={{ color: 'blue' }} onClick={() => handleEdit(item)}>
-                              <EditIcon />
-                            </IconButton> */}
-                        {/* <IconButton
-                          aria-label="delete"
-                          style={{ color: 'red' }}
-                          onClick={() => handleDelete(item?.id)}
-                        >
-                          <DeleteIcon />
-                        </IconButton> */}
-                      </TableRow>
-                    </>
-                  );
-                })
+                data.map((item, id) => (
+                  <TableRow key={id}>
+                    <TableCell>{id + 1}</TableCell>
+                    <TableCell>{item?.name}</TableCell>
+                    <TableCell>{item?.email}</TableCell>
+                    <TableCell>{item?.phone}</TableCell>
+                    <TableCell>{item?.service}</TableCell>
+                    <TableCell>{item?.other_service}</TableCell>
+                    <TableCell>{item?.address}</TableCell>
+                    <TableCell>{item?.comment}</TableCell>
+                    <TableCell>
+                      <IconButton aria-label="delete" style={{ color: 'red' }} onClick={() => handleDelete(item?.id)}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))
               )}
             </TableBody>
           </Table>

@@ -4,9 +4,7 @@ import {
   TextField,
   Button,
   Grid,
-  Input,
   FormControl,
-  FormLabel,
   TableContainer,
   Paper,
   Table,
@@ -22,62 +20,63 @@ import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-const InternshipOpening = () => {
+const TeamMember = () => {
   const [show, setShow] = useState(false);
+  const [name, setName] = useState('');
   const [designation, setDesignation] = useState('');
-  const [opening, setOpening] = useState('');
-  const [location, setLocation] = useState('');
-  const [qualification, setQualification] = useState('');
+  const [img, setImg] = useState(null);
+  const [imgPreview, setImgPreview] = useState(null); // For displaying the existing image
   const [errors, setErrors] = useState({});
   const [data, setData] = useState([]);
   const [editingId, setEditingId] = useState(null);
 
   useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = () => {
     axios
-      .get('internship/find')
+      .get('/team/getteamRecord')
       .then((result) => {
         setData(result.data);
       })
       .catch((err) => {
         console.log('err', err);
       });
-  }, [show]);
+  };
 
   const onClick = () => {
     setShow(true);
-    setDesignation('');
-    setOpening('');
-    setLocation('');
-    setQualification('');
-    setErrors({});
-    setEditingId(null);
+    resetForm();
   };
+
   const onClick1 = () => {
     setShow(false);
+  };
+
+  const resetForm = () => {
+    setName('');
+    setDesignation('');
+    setImg(null);
+    setImgPreview(null);
+    setErrors({});
+    setEditingId(null);
   };
 
   const validateForm = () => {
     let errors = {};
     let isValid = true;
 
-    if (!opening.trim()) {
-      errors.opening = 'Internship opening is required';
-      isValid = false;
-    } else if (!/^\d+$/.test(opening.trim())) {
-      errors.opening = 'Internship opening must contain only numbers';
+    if (!name.trim()) {
+      errors.name = 'Name is required';
       isValid = false;
     }
-
     if (!designation.trim()) {
       errors.designation = 'Designation is required';
       isValid = false;
     }
-    if (!location.trim()) {
-      errors.location = 'Location is required';
-      isValid = false;
-    }
-    if (!qualification.trim()) {
-      errors.qualification = 'Qualification is required';
+    if (!img && !imgPreview) {
+      errors.img = 'Image is required';
       isValid = false;
     }
 
@@ -85,78 +84,72 @@ const InternshipOpening = () => {
     return isValid;
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setImg(file);
+    setImgPreview(URL.createObjectURL(file)); // Show preview of new image
+  };
+
   const SubmitForm = (e) => {
     e.preventDefault();
     if (validateForm()) {
-      let newData = {
-        designation,
-        opening,
-        location,
-        qualification,
-      };
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('designation', designation);
+      if (img) {
+        formData.append('img', img);
+      }
 
-      const url = editingId ? `internship/update/${editingId}` : 'internship/create';
+      const url = editingId ? `/team/updateTeamRecord/${editingId}` : '/team/createteamRecord';
       const method = editingId ? 'put' : 'post';
 
       axios({
         method: method,
         url: url,
-        data: newData,
-        headers: { 'Content-Type': 'application/json' },
+        data: formData,
+        headers: { 'Content-Type': 'multipart/form-data' },
       })
         .then((resp) => {
           console.log('resp', resp);
           alert('Form submitted successfully');
           setShow(true);
-          setEditingId(null);
+          fetchData(); // Refresh data after successful submit
         })
         .catch((err) => {
           console.log('err', err);
           alert(`Error: ${err.response?.data?.message || 'Something went wrong!'}`);
         });
 
-      setDesignation('');
-      setOpening('');
-      setLocation('');
-      setQualification('');
-      setErrors({});
+      resetForm();
     }
   };
 
   const handleEdit = (item) => {
+    setName(item.name);
     setDesignation(item.designation);
-    setOpening(item.opening);
-    setLocation(item.location);
-    setQualification(item.qualification);
+    setImg(null);
+    setImgPreview(item.img); // Set the existing image URL
     setEditingId(item.id);
     setShow(false);
   };
 
-  const handleDelete = (internship) => {
-    console.log('internship', internship);
+  const handleDelete = (teamId) => {
     axios
-      .delete(`internship/delete/${internship}`)
+      .delete(`/team/deleteTeamRecord/${teamId}`)
       .then((response) => {
-        console.log('Internship deleted successfully');
-        axios
-          .get('internship/find')
-          .then((result) => {
-            setData(result.data);
-          })
-          .catch((err) => {
-            console.log('err', err);
-          });
+        console.log('Team record deleted successfully');
+        fetchData(); // Refresh data after successful delete
       })
       .catch((error) => {
-        console.error('Error deleting internship:', error);
+        console.error('Error deleting team record:', error);
       });
   };
 
   return (
-    <PageContainer title="Internship Opening" description="this is Sample page">
+    <PageContainer title="Team Record" description="This is a sample page for managing team records">
       <DashboardCard
-        title="Internship Opening"
-        buttonName={show ? 'Add Internship Opening' : 'View Internship Opening'}
+        title="Team Record"
+        buttonName={show ? 'View Team Records' : 'Add Team Record'}
         onClick={show ? onClick1 : onClick}
       >
         {show ? (
@@ -164,14 +157,9 @@ const InternshipOpening = () => {
             <Table stickyHeader>
               <TableHead>
                 <TableRow>
-                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>
-                    Designation
-                  </TableCell>
-                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Opening</TableCell>
-                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Location</TableCell>
-                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>
-                    Qualification
-                  </TableCell>
+                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Name</TableCell>
+                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Designation</TableCell>
+                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Image</TableCell>
                   <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Action</TableCell>
                 </TableRow>
               </TableHead>
@@ -183,10 +171,11 @@ const InternshipOpening = () => {
                 ) : (
                   data.map((item, id) => (
                     <TableRow key={id}>
+                      <TableCell>{item?.name}</TableCell>
                       <TableCell>{item?.designation}</TableCell>
-                      <TableCell>{item?.opening}</TableCell>
-                      <TableCell>{item?.location}</TableCell>
-                      <TableCell>{item?.qualification}</TableCell>
+                      <TableCell>
+                        <img src={item?.img} alt={item?.category} style={{ width: '30px', height: '30px' }} />
+                      </TableCell>
                       <TableCell>
                         <IconButton
                           aria-label="edit"
@@ -215,6 +204,20 @@ const InternshipOpening = () => {
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
+                  label="Name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  variant="outlined"
+                />
+                {errors.name && (
+                  <span className="error" style={{ color: 'red' }}>
+                    {errors.name}
+                  </span>
+                )}
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
                   label="Designation"
                   value={designation}
                   onChange={(e) => setDesignation(e.target.value)}
@@ -227,48 +230,23 @@ const InternshipOpening = () => {
                 )}
               </Grid>
               <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Opening"
-                  value={opening}
-                  onChange={(e) => setOpening(e.target.value)}
-                  variant="outlined"
+                <input
+                  type="file"
+                  onChange={handleFileChange}
+                  accept="image/*"
                 />
-                {errors.opening && (
+                {errors.img && (
                   <span className="error" style={{ color: 'red' }}>
-                    {errors.opening}
-                  </span>
-                )}
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Location"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  variant="outlined"
-                />
-                {errors.location && (
-                  <span className="error" style={{ color: 'red' }}>
-                    {errors.location}
-                  </span>
-                )}
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Qualification"
-                  value={qualification}
-                  onChange={(e) => setQualification(e.target.value)}
-                  variant="outlined"
-                />
-                {errors.qualification && (
-                  <span className="error" style={{ color: 'red' }}>
-                    {errors.qualification}
+                    {errors.img}
                   </span>
                 )}
               </Grid>
               <Grid item xs={12}>
+                {imgPreview && (
+                  <div>
+                    <img src={imgPreview} alt="Preview" style={{ width: '100px', height: '100px', marginBottom: '10px' }} />
+                  </div>
+                )}
                 <Button variant="contained" type="submit" color="primary">
                   {editingId ? 'Update' : 'Submit'}
                 </Button>
@@ -281,4 +259,4 @@ const InternshipOpening = () => {
   );
 };
 
-export default InternshipOpening;
+export default TeamMember;

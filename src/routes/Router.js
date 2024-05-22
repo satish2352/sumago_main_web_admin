@@ -10,7 +10,12 @@ import ContactForm from 'src/views/contactform/ContactForm';
 import ApplyNowForm from 'src/views/apply-now/ApplyNowForm';
 import QuotesForm from 'src/views/Quotes-Form/QuotesForm';
 import ProtectedRoutes from 'src/ProtectedRoutes';
-
+import TeamMember from 'src/views/Team Member/TeamMember';
+import Appreciations from 'src/views/Appreciations/Appreciations'
+import CompanyCulture from 'src/views/Company Culture/CompanyCulture';
+import Funatsumago from 'src/views/funatsumago/Funatsumago';
+import Funcategory from 'src/views/funatsumago/Funcategory';
+import CompanyCultureCategories from 'src/views/Company Culture/CompanyCultureCategories';
 /* ***Layouts**** */
 const FullLayout = Loadable(lazy(() => import('../layouts/full/FullLayout')));
 const BlankLayout = Loadable(lazy(() => import('../layouts/blank/BlankLayout')));
@@ -56,6 +61,27 @@ const Router = [
         exact: true,
         element: <ProtectedRoutes Component={OfficeLocation} />,
       },
+      {
+        path: '/team-member',
+        exact: true,
+        element: <ProtectedRoutes Component={TeamMember} />,
+      },
+      {
+        path: '/appreciations',
+        exact: true,
+        element: <ProtectedRoutes Component={Appreciations} />,
+      },
+      {
+        path: '/CompanyCulture',
+        exact: true,
+        element: <ProtectedRoutes Component={CompanyCulture} />,
+      },
+      {
+        path: '/companyCultureCategories',
+        exact: true,
+        element: <ProtectedRoutes Component={CompanyCultureCategories} />,
+      },
+   
       { path: '/contactform', exact: true, element: <ProtectedRoutes Component={ContactForm} /> },
       { path: '/applynow', exact: true, element: <ProtectedRoutes Component={ApplyNowForm} /> },
       { path: '/quotes', exact: true, element: <ProtectedRoutes Component={QuotesForm} /> },

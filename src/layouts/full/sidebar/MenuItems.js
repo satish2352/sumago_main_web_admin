@@ -83,6 +83,34 @@ const Menuitems = [
     icon: IconAperture,
     href: '/contactform',
   },
+  {
+    navlabel: true,
+    subheader: 'about-us',
+  },
+  {
+    id: uniqueId(),
+    title: 'Team Member',
+    icon: IconAperture,
+    href: '/team-member',
+  },
+  {
+    id: uniqueId(),
+    title: 'CultureCategories',
+    icon: IconAperture,
+    href: '/companyCultureCategories',
+  },
+  {
+    id: uniqueId(),
+    title: 'CompanyCulture',
+    icon: IconAperture,
+    href: '/companyCulture',
+  },
+  {
+    id: uniqueId(),
+    title: 'Appreciations',
+    icon: IconAperture,
+    href: '/Appreciations',
+  },
   // {
   //   navlabel: true,
   //   subheader: 'Auth',

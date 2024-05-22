@@ -21,7 +21,7 @@ import axios from 'axios';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-
+import * as XLSX from 'xlsx';
 const ContactForm = () => {
   const [data, setData] = useState([]);
   useEffect(() => {
@@ -54,10 +54,27 @@ const ContactForm = () => {
         console.error('Error deleting contact:', error);
       });
   };
+  const downloadExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Contact');
+    XLSX.writeFile(workbook, 'Contact.xlsx');
+  };
 
   return (
     <PageContainer title="Contact Form" description="this is Sample page">
-      <DashboardCard title="Contact Form">
+      <DashboardCard title="">
+        <Grid container justifyContent="space-between" alignItems="center" style={{ marginBottom: '20px' }}>
+          <Grid item>
+            <Typography variant="h6">Contact Form</Typography>
+          </Grid>
+          <Grid item>
+            <Button variant="contained" color="primary" onClick={downloadExcel} style={{ marginBottom: '20px' }}>
+              Download Excel
+            </Button>
+          </Grid>
+        </Grid>
+
         <TableContainer component={Paper}>
           <Table stickyHeader>
             <TableHead>

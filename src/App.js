@@ -10,7 +10,7 @@ function App() {
   const routing = useRoutes(Router);
   const theme = baselightTheme;
 
-  axios.defaults.baseURL = "https://nodebackend.sumagoinfotech.com/"
+  axios.defaults.baseURL = "https://sumagodemo.com/"
 
   const token = localStorage.getItem('token');
 
