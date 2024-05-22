@@ -111,16 +111,16 @@ const Menuitems = [
     icon: IconAperture,
     href: '/Appreciations',
   },
-  // {
-  //   navlabel: true,
-  //   subheader: 'Auth',
-  // },
-  // {
-  //   id: uniqueId(),
-  //   title: 'Login',
-  //   icon: IconLogin,
-  //   href: '/auth/login',
-  // },
+  {
+    navlabel: true,
+    subheader: 'Our-Solutions',
+  },
+  {
+    id: uniqueId(),
+    title: 'Brocherdetail',
+    icon: IconAperture,
+    href: '/brocherdetail',
+  }
   // {
   //   id: uniqueId(),
   //   title: 'Register',

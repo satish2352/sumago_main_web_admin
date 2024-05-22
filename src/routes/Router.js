@@ -16,6 +16,7 @@ import CompanyCulture from 'src/views/Company Culture/CompanyCulture';
 import Funatsumago from 'src/views/funatsumago/Funatsumago';
 import Funcategory from 'src/views/funatsumago/Funcategory';
 import CompanyCultureCategories from 'src/views/Company Culture/CompanyCultureCategories';
+import Brocherdetail from 'src/views/Brocherdeatils/Brocherdetail';
 /* ***Layouts**** */
 const FullLayout = Loadable(lazy(() => import('../layouts/full/FullLayout')));
 const BlankLayout = Loadable(lazy(() => import('../layouts/blank/BlankLayout')));
@@ -62,6 +63,11 @@ const Router = [
         element: <ProtectedRoutes Component={OfficeLocation} />,
       },
       {
+        path: '/brocherdetail',
+        exact: true,
+        element: <ProtectedRoutes Component={Brocherdetail} />,
+      },
+      {
         path: '/team-member',
         exact: true,
         element: <ProtectedRoutes Component={TeamMember} />,
@@ -81,7 +87,7 @@ const Router = [
         exact: true,
         element: <ProtectedRoutes Component={CompanyCultureCategories} />,
       },
-   
+
       { path: '/contactform', exact: true, element: <ProtectedRoutes Component={ContactForm} /> },
       { path: '/applynow', exact: true, element: <ProtectedRoutes Component={ApplyNowForm} /> },
       { path: '/quotes', exact: true, element: <ProtectedRoutes Component={QuotesForm} /> },

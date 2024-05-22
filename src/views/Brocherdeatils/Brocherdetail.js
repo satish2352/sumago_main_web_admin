@@ -61,22 +61,13 @@ const  Brocherdetail = () => {
             <Table stickyHeader>
               <TableHead>
                 <TableRow>
-                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>
-                    Application Type
-                  </TableCell>
+                
                   <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Name</TableCell>
-                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Title</TableCell>
                   <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Email</TableCell>
-                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>
-                    Confirm Email
-                  </TableCell>
+                 
                   <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Phone No.</TableCell>
-                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Address</TableCell>
-                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>CV</TableCell>
-                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>
-                    Cover Letter
-                  </TableCell>
-                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Action</TableCell>
+                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Location</TableCell>
+             
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -91,38 +82,11 @@ const  Brocherdetail = () => {
                     return (
                       <>
                         <TableRow>
-                          <TableCell>{item?.applicationType}</TableCell>
-                          <TableCell>{item?.name}</TableCell>
-                          <TableCell>{item?.title}</TableCell>
+                          <TableCell>{item?. fullname}</TableCell>
                           <TableCell>{item?.email}</TableCell>
-                          <TableCell>{item?.confmEmail}</TableCell>
+                          <TableCell>{item?.location}</TableCell>
                           <TableCell>{item?.phone}</TableCell>
-                          <TableCell>{item?.address}</TableCell>
-                          <TableCell>
-                            {item?.cv && (
-                              <a href={item?.cv} style={{ textDecoration: 'none' }} download>
-                                CV
-                              </a>
-                            )}
-                          </TableCell>
-                          <TableCell>
-                            {item?.cover_letter && (
-                              <a
-                                href={item?.cover_letter}
-                                style={{ textDecoration: 'none' }}
-                                download
-                              >
-                                Cover Letter
-                              </a>
-                            )}
-                          </TableCell>
-                          <IconButton
-                            aria-label="delete"
-                            style={{ color: 'red' }}
-                            onClick={() => handleDelete(item?.id)}
-                          >
-                            <DeleteIcon />
-                          </IconButton>
+                         
                         </TableRow>
                       </>
                     );
