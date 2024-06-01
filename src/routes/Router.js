@@ -17,6 +17,9 @@ import Funatsumago from 'src/views/funatsumago/Funatsumago';
 import Funcategory from 'src/views/funatsumago/Funcategory';
 import CompanyCultureCategories from 'src/views/Company Culture/CompanyCultureCategories';
 import Brocherdetail from 'src/views/Brocherdeatils/Brocherdetail';
+import Homeslider from 'src/views/Homeslider/Homeslider';
+import BlogDetail from 'src/views/BlogDetail/BlogDetail';
+import Mission from 'src/views/Mission/Mission';
 /* ***Layouts**** */
 const FullLayout = Loadable(lazy(() => import('../layouts/full/FullLayout')));
 const BlankLayout = Loadable(lazy(() => import('../layouts/blank/BlankLayout')));
@@ -39,7 +42,7 @@ const Router = [
     children: [
       { path: '/', element: <Navigate to="/auth/login" /> },
       // { path: '/dashboard', exact: true, element: <Dashboard /> },
-      { path: '/testimonials', exact: true, element: <ProtectedRoutes Component={Testimonials} /> },
+      // { path: '/testimonials', exact: true, element: <ProtectedRoutes Component={Testimonials} /> },
       { path: '/clients', exact: true, element: <ProtectedRoutes Component={ValuableClients} /> },
       {
         path: '/life-category',
@@ -87,7 +90,21 @@ const Router = [
         exact: true,
         element: <ProtectedRoutes Component={CompanyCultureCategories} />,
       },
-
+      {
+        path: '/homeslider',
+        exact: true,
+        element: <ProtectedRoutes Component={Homeslider} />,
+      },
+      {
+        path: '/blogdeatils',
+        exact: true,
+        element: <ProtectedRoutes Component={BlogDetail} />,
+      },
+      {
+        path: '/mission',
+        exact: true,
+        element: <ProtectedRoutes Component={Mission} />,
+      },
       { path: '/contactform', exact: true, element: <ProtectedRoutes Component={ContactForm} /> },
       { path: '/applynow', exact: true, element: <ProtectedRoutes Component={ApplyNowForm} /> },
       { path: '/quotes', exact: true, element: <ProtectedRoutes Component={QuotesForm} /> },

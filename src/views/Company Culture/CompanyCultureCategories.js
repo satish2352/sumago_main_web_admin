@@ -136,6 +136,31 @@ const CompanyCultureCategories = () => {
         onClick={show ? onClick1 : onClick}
       >
         {show ? (
+          <form onSubmit={SubmitForm}>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Category"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  variant="outlined"
+                />
+                {errors.category && (
+                  <span className="error" style={{ color: 'red' }}>
+                    {errors.category}
+                  </span>
+                )}
+              </Grid>
+              <Grid item xs={12}>
+                <Button variant="contained" type="submit" color="primary">
+                  {editingId ? 'Update' : 'Submit'}
+                </Button>
+              </Grid>
+            </Grid>
+          </form>
+
+        ) : (
           <TableContainer component={Paper}>
             <Table stickyHeader>
               <TableHead>
@@ -177,30 +202,6 @@ const CompanyCultureCategories = () => {
               </TableBody>
             </Table>
           </TableContainer>
-        ) : (
-          <form onSubmit={SubmitForm}>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Category"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  variant="outlined"
-                />
-                {errors.category && (
-                  <span className="error" style={{ color: 'red' }}>
-                    {errors.category}
-                  </span>
-                )}
-              </Grid>
-              <Grid item xs={12}>
-                <Button variant="contained" type="submit" color="primary">
-                  {editingId ? 'Update' : 'Submit'}
-                </Button>
-              </Grid>
-            </Grid>
-          </form>
         )}
       </DashboardCard>
     </PageContainer>

@@ -15,12 +15,12 @@ const Menuitems = [
     navlabel: true,
     subheader: 'Home',
   },
-  {
-    id: uniqueId(),
-    title: 'Quotes Form',
-    icon: IconAperture,
-    href: '/quotes',
-  },
+  // {
+  //   id: uniqueId(),
+  //   title: 'Quotes Form',
+  //   icon: IconAperture,
+  //   href: '/quotes',
+  // },
   {
     id: uniqueId(),
     title: 'Testimonials',

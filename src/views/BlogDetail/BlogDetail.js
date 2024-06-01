@@ -20,10 +20,12 @@ import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-const Appreciations = () => {
+const BlogDetail = () => {
   const [show, setShow] = useState(false);
-  const [name, setName] = useState('');
-  const [designation, setDesignation] = useState('');
+  const [title, setTitle] = useState('');
+  const [text, setText] = useState('');
+  const [subtitle, setSubtitle] = useState('');
+  const [date, setDate] = useState('');
   const [img, setImg] = useState(null);
   const [imgPreview, setImgPreview] = useState(null); // For displaying the existing image
   const [errors, setErrors] = useState({});
@@ -36,7 +38,7 @@ const Appreciations = () => {
 
   const fetchData = () => {
     axios
-      .get('/appreciation/getAppreciation')
+      .get('/Blogdetails/getBlogdetails')
       .then((result) => {
         setData(result.data);
       })
@@ -55,8 +57,10 @@ const Appreciations = () => {
   };
 
   const resetForm = () => {
-    setName('');
-    setDesignation('');
+    setTitle('');
+    setText('');
+    setSubtitle('');
+    setDate('');
     setImg(null);
     setImgPreview(null);
     setErrors({});
@@ -67,12 +71,20 @@ const Appreciations = () => {
     let errors = {};
     let isValid = true;
 
-    if (!name.trim()) {
-      errors.name = 'Name is required';
+    if (!title.trim()) {
+      errors.title = 'Title is required';
       isValid = false;
     }
-    if (!designation.trim()) {
-      errors.designation = 'Designation is required';
+    if (!text.trim()) {
+      errors.text = 'Text is required';
+      isValid = false;
+    }
+    if (!subtitle.trim()) {
+      errors.subtitle = 'Subtitle is required';
+      isValid = false;
+    }
+    if (!date.trim()) {
+      errors.date = 'Date is required';
       isValid = false;
     }
     if (!img && !imgPreview) {
@@ -94,13 +106,15 @@ const Appreciations = () => {
     e.preventDefault();
     if (validateForm()) {
       const formData = new FormData();
-      formData.append('name', name);
-      formData.append('designation', designation);
+      formData.append('title', title);
+      formData.append('text', text);
+      formData.append('subtitle', subtitle);
+      formData.append('date', date);
       if (img) {
         formData.append('img', img);
       }
 
-      const url = editingId ? `/appreciation/updateAppreciationRecord/${editingId}` : '/appreciation/createAppreciationRecord';
+      const url = editingId ? `/Blogdetails/update/${editingId}` : '/Blogdetails/createBlogdetailsRecord';
       const method = editingId ? 'put' : 'post';
 
       axios({
@@ -125,61 +139,92 @@ const Appreciations = () => {
   };
 
   const handleEdit = (item) => {
-    setName(item.name);
-    setDesignation(item.designation);
+    setTitle(item.title);
+    setText(item.text);
+    setSubtitle(item.subtitle);
+    setDate(new Date(item.date).toISOString().split('T')[0]); // Set date in yyyy-mm-dd format
     setImg(null);
     setImgPreview(item.img); // Set the existing image URL
     setEditingId(item.id);
-    setShow(false);
+    setShow(true); // Show form when editing
   };
 
-  const handleDelete = (teamId) => {
+  const handleDelete = (blogId) => {
     axios
-      .delete(`/appreciation/deleteAppreciationRecord/${teamId}`)
+      .delete(`/Blogdetails/delete/${blogId}`)
       .then((response) => {
-        console.log('Team record deleted successfully');
+        console.log('Blog detail deleted successfully');
         fetchData(); // Refresh data after successful delete
       })
       .catch((error) => {
-        console.error('Error deleting team record:', error);
+        console.error('Error deleting blog detail:', error);
       });
   };
 
   return (
-    <PageContainer title="Team Record" description="This is a sample page for managing team records">
-      <DashboardCard
-        title="Appreciation Record"
-        buttonName={show ? 'View Appreciation Records' : 'Add Appreciation Record'}
-        onClick={show ? onClick1 : onClick}
-      >
+    <PageContainer title="Blog Details" description="This is a sample page for managing blog details">
+      <DashboardCard title="Blog Details">
+        <Button variant="contained" color="primary" onClick={show ? onClick1 : onClick} style={{ marginBottom: '20px' }}>
+          {show ? 'View Blog Details' : 'Add Blog Detail'}
+        </Button>
         {show ? (
           <form onSubmit={SubmitForm}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  label="Name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  label="Title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
                   variant="outlined"
                 />
-                {errors.name && (
+                {errors.title && (
                   <span className="error" style={{ color: 'red' }}>
-                    {errors.name}
+                    {errors.title}
                   </span>
                 )}
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  label="Designation"
-                  value={designation}
-                  onChange={(e) => setDesignation(e.target.value)}
+                  label="Text"
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
                   variant="outlined"
                 />
-                {errors.designation && (
+                {errors.text && (
                   <span className="error" style={{ color: 'red' }}>
-                    {errors.designation}
+                    {errors.text}
+                  </span>
+                )}
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Subtitle"
+                  value={subtitle}
+                  onChange={(e) => setSubtitle(e.target.value)}
+                  variant="outlined"
+                />
+                {errors.subtitle && (
+                  <span className="error" style={{ color: 'red' }}>
+                    {errors.subtitle}
+                  </span>
+                )}
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Date"
+                  type="date"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  variant="outlined"
+                  InputLabelProps={{ shrink: true }}
+                />
+                {errors.date && (
+                  <span className="error" style={{ color: 'red' }}>
+                    {errors.date}
                   </span>
                 )}
               </Grid>
@@ -207,14 +252,15 @@ const Appreciations = () => {
               </Grid>
             </Grid>
           </form>
-
         ) : (
           <TableContainer component={Paper}>
             <Table stickyHeader>
               <TableHead>
                 <TableRow>
-                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Name</TableCell>
-                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Designation</TableCell>
+                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Title</TableCell>
+                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Text</TableCell>
+                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Subtitle</TableCell>
+                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Date</TableCell>
                   <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Image</TableCell>
                   <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Action</TableCell>
                 </TableRow>
@@ -227,10 +273,12 @@ const Appreciations = () => {
                 ) : (
                   data.map((item, id) => (
                     <TableRow key={id}>
-                      <TableCell>{item?.name}</TableCell>
-                      <TableCell>{item?.designation}</TableCell>
+                      <TableCell>{item?.title}</TableCell>
+                      <TableCell>{item?.text}</TableCell>
+                      <TableCell>{item?.subtitle}</TableCell>
+                      <TableCell>{new Date(item?.date).toLocaleDateString()}</TableCell>
                       <TableCell>
-                        <img src={item?.img} alt={item?.category} style={{ width: '30px', height: '30px' }} />
+                        <img src={item?.img} alt={item?.title} style={{ width: '30px', height: '30px' }} />
                       </TableCell>
                       <TableCell>
                         <IconButton
@@ -260,5 +308,4 @@ const Appreciations = () => {
   );
 };
 
-
-export default Appreciations
+export default BlogDetail;

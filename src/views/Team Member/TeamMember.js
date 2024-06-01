@@ -153,53 +153,7 @@ const TeamMember = () => {
         onClick={show ? onClick1 : onClick}
       >
         {show ? (
-          <TableContainer component={Paper}>
-            <Table stickyHeader>
-              <TableHead>
-                <TableRow>
-                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Name</TableCell>
-                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Designation</TableCell>
-                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Image</TableCell>
-                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Action</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {data.length === 0 ? (
-                  <div style={{ marginLeft: '10px', color: 'red' }}>
-                    <h3>No data found</h3>
-                  </div>
-                ) : (
-                  data.map((item, id) => (
-                    <TableRow key={id}>
-                      <TableCell>{item?.name}</TableCell>
-                      <TableCell>{item?.designation}</TableCell>
-                      <TableCell>
-                        <img src={item?.img} alt={item?.category} style={{ width: '30px', height: '30px' }} />
-                      </TableCell>
-                      <TableCell>
-                        <IconButton
-                          aria-label="edit"
-                          style={{ color: 'blue' }}
-                          onClick={() => handleEdit(item)}
-                        >
-                          <EditIcon />
-                        </IconButton>
-                        <IconButton
-                          aria-label="delete"
-                          style={{ color: 'red' }}
-                          onClick={() => handleDelete(item?.id)}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        ) : (
-          <form onSubmit={SubmitForm}>
+       <form onSubmit={SubmitForm}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
@@ -253,6 +207,52 @@ const TeamMember = () => {
               </Grid>
             </Grid>
           </form>
+        ) : (
+          <TableContainer component={Paper}>
+          <Table stickyHeader>
+            <TableHead>
+              <TableRow>
+                <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Name</TableCell>
+                <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Designation</TableCell>
+                <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Image</TableCell>
+                <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Action</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {data.length === 0 ? (
+                <div style={{ marginLeft: '10px', color: 'red' }}>
+                  <h3>No data found</h3>
+                </div>
+              ) : (
+                data.map((item, id) => (
+                  <TableRow key={id}>
+                    <TableCell>{item?.name}</TableCell>
+                    <TableCell>{item?.designation}</TableCell>
+                    <TableCell>
+                      <img src={item?.img} alt={item?.category} style={{ width: '30px', height: '30px' }} />
+                    </TableCell>
+                    <TableCell>
+                      <IconButton
+                        aria-label="edit"
+                        style={{ color: 'blue' }}
+                        onClick={() => handleEdit(item)}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton
+                        aria-label="delete"
+                        style={{ color: 'red' }}
+                        onClick={() => handleDelete(item?.id)}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
         )}
       </DashboardCard>
     </PageContainer>

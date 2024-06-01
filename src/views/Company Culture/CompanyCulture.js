@@ -161,6 +161,56 @@ const CompanyCulture = () => {
         onClick={show ? onClick1 : onClick}
       >
         {show ? (
+          <form onSubmit={SubmitForm}>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <TextField
+                  select
+                  fullWidth
+                  label="Category"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  variant="outlined"
+                >
+                  {categories.map((cat) => (
+                    <MenuItem key={cat.id} value={cat.category}>
+                      {cat.category} {/* Display the category name here */}
+                    </MenuItem>
+                  ))}
+                </TextField>
+
+
+                {errors.category && (
+                  <span className="error" style={{ color: 'red' }}>
+                    {errors.category}
+                  </span>
+                )}
+              </Grid>
+              <Grid item xs={12}>
+                <div>
+                  <FormLabel style={{ marginBottom: '10px' }}>File Upload</FormLabel>
+                  <Input
+                    type="file"
+                    onChange={(e) => setImg(e.target.files[0])}
+                    fullWidth
+                    style={{ marginTop: '10px' }}
+                  />
+                  {errors.img && (
+                    <span className="error" style={{ color: 'red' }}>
+                      {errors.img}
+                    </span>
+                  )}
+                </div>
+              </Grid>
+              <Grid item xs={12}>
+                <Button variant="contained" type="submit" color="primary">
+                  {editingId ? 'Update' : 'Submit'}
+                </Button>
+              </Grid>
+            </Grid>
+          </form>
+
+        ) : (
           <TableContainer component={Paper}>
             <Table stickyHeader>
               <TableHead>
@@ -206,55 +256,6 @@ const CompanyCulture = () => {
               </TableBody>
             </Table>
           </TableContainer>
-        ) : (
-          <form onSubmit={SubmitForm}>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <TextField
-                  select
-                  fullWidth
-                  label="Category"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  variant="outlined"
-                >
-                  {categories.map((cat) => (
-                    <MenuItem key={cat.id} value={cat.category}>
-                      {cat.category} {/* Display the category name here */}
-                    </MenuItem>
-                  ))}
-                </TextField>
-                
-
-                {errors.category && (
-                  <span className="error" style={{ color: 'red' }}>
-                    {errors.category}
-                  </span>
-                )}
-              </Grid>
-              <Grid item xs={12}>
-                <div>
-                  <FormLabel style={{ marginBottom: '10px' }}>File Upload</FormLabel>
-                  <Input
-                    type="file"
-                    onChange={(e) => setImg(e.target.files[0])}
-                    fullWidth
-                    style={{ marginTop: '10px' }}
-                  />
-                  {errors.img && (
-                    <span className="error" style={{ color: 'red' }}>
-                      {errors.img}
-                    </span>
-                  )}
-                </div>
-              </Grid>
-              <Grid item xs={12}>
-                <Button variant="contained" type="submit" color="primary">
-                  {editingId ? 'Update' : 'Submit'}
-                </Button>
-              </Grid>
-            </Grid>
-          </form>
         )}
       </DashboardCard>
     </PageContainer>
