@@ -20,6 +20,10 @@ import Brocherdetail from 'src/views/Brocherdeatils/Brocherdetail';
 import Homeslider from 'src/views/Homeslider/Homeslider';
 import BlogDetail from 'src/views/BlogDetail/BlogDetail';
 import Mission from 'src/views/Mission/Mission';
+import Vission from 'src/views/vission/Vission';
+import HomeTechnologies from 'src/views/HomeTechnologies/HomeTechnologies';
+import WhySumago from 'src/views/WhySumago/WhySumago';
+import HomeCards from 'src/views/HomeCards/HomeCards ';
 /* ***Layouts**** */
 const FullLayout = Loadable(lazy(() => import('../layouts/full/FullLayout')));
 const BlankLayout = Loadable(lazy(() => import('../layouts/blank/BlankLayout')));
@@ -105,6 +109,32 @@ const Router = [
         exact: true,
         element: <ProtectedRoutes Component={Mission} />,
       },
+      {
+        path: '/vission',
+        exact: true,
+        element: <ProtectedRoutes Component={Vission} />,
+      },
+      {
+        path: '/homeTechnologies',
+        exact: true,
+        element: <ProtectedRoutes Component={HomeTechnologies} />,
+      },
+      {
+        path: '/HomeCards',
+        exact: true,
+        element: <ProtectedRoutes Component={HomeCards} />,
+      },
+      {
+        path: '/blogDetail',
+        exact: true,
+        element: <ProtectedRoutes Component={BlogDetail} />,
+      },
+      {
+        path: '/WhySumago',
+        exact: true,
+        element: <ProtectedRoutes Component={WhySumago} />,
+      },
+
       { path: '/contactform', exact: true, element: <ProtectedRoutes Component={ContactForm} /> },
       { path: '/applynow', exact: true, element: <ProtectedRoutes Component={ApplyNowForm} /> },
       { path: '/quotes', exact: true, element: <ProtectedRoutes Component={QuotesForm} /> },

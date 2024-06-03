@@ -4,7 +4,6 @@ import {
   TextField,
   Button,
   Grid,
-  FormControl,
   TableContainer,
   Paper,
   Table,
@@ -21,101 +20,92 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 const BlogDetail = () => {
-  const [show, setShow] = useState(false);
-  const [title, setTitle] = useState('');
-  const [text, setText] = useState('');
-  const [subtitle, setSubtitle] = useState('');
-  const [date, setDate] = useState('');
-  const [img, setImg] = useState(null);
-  const [imgPreview, setImgPreview] = useState(null); // For displaying the existing image
-  const [errors, setErrors] = useState({});
-  const [data, setData] = useState([]);
-  const [editingId, setEditingId] = useState(null);
+  const [blogData, setBlogData] = useState([]);
+  const [blogTitle, setBlogTitle] = useState('');
+  const [blogText, setBlogText] = useState('');
+  const [blogDate, setBlogDate] = useState('');
+  const [blogSubtitle, setBlogSubtitle] = useState('');
+  const [blogImg, setBlogImg] = useState(null);
+  const [blogImgPreview, setBlogImgPreview] = useState(null); // For displaying the existing image
+  const [blogErrors, setBlogErrors] = useState({});
+  const [editingBlogId, setEditingBlogId] = useState(null);
+  const [showBlogForm, setShowBlogForm] = useState(false);
 
   useEffect(() => {
-    fetchData();
+    fetchBlogDetails();
   }, []);
 
-  const fetchData = () => {
-    axios
-      .get('/Blogdetails/getBlogdetails')
-      .then((result) => {
-        setData(result.data);
+  const fetchBlogDetails = () => {
+    axios.get('/Blogdetails/getBlogdetails')
+      .then((response) => {
+        setBlogData(response.data);
       })
-      .catch((err) => {
-        console.log('err', err);
+      .catch((error) => {
+        console.error('Error fetching blog details:', error);
       });
   };
 
-  const onClick = () => {
-    setShow(true);
-    resetForm();
-  };
-
-  const onClick1 = () => {
-    setShow(false);
-  };
-
-  const resetForm = () => {
-    setTitle('');
-    setText('');
-    setSubtitle('');
-    setDate('');
-    setImg(null);
-    setImgPreview(null);
-    setErrors({});
-    setEditingId(null);
-  };
-
-  const validateForm = () => {
+  const validateBlogForm = () => {
     let errors = {};
     let isValid = true;
 
-    if (!title.trim()) {
+    if (!blogTitle.trim()) {
       errors.title = 'Title is required';
       isValid = false;
     }
-    if (!text.trim()) {
+    if (!blogText.trim()) {
       errors.text = 'Text is required';
       isValid = false;
     }
-    if (!subtitle.trim()) {
-      errors.subtitle = 'Subtitle is required';
-      isValid = false;
-    }
-    if (!date.trim()) {
+    if (!blogDate.trim()) {
       errors.date = 'Date is required';
       isValid = false;
     }
-    if (!img && !imgPreview) {
+    if (!blogSubtitle.trim()) {
+      errors.subtitle = 'Subtitle is required';
+      isValid = false;
+    }
+    if (!blogImg && !blogImgPreview) {
       errors.img = 'Image is required';
       isValid = false;
     }
 
-    setErrors(errors);
+    setBlogErrors(errors);
     return isValid;
   };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    setImg(file);
-    setImgPreview(URL.createObjectURL(file)); // Show preview of new image
+    setBlogImg(file);
+    setBlogImgPreview(URL.createObjectURL(file)); // Show preview of new image
   };
 
-  const SubmitForm = (e) => {
+  const resetBlogForm = () => {
+    setBlogTitle('');
+    setBlogText('');
+    setBlogDate('');
+    setBlogSubtitle('');
+    setBlogImg(null);
+    setBlogImgPreview(null);
+    setBlogErrors({});
+    setEditingBlogId(null);
+    setShowBlogForm(false);
+  };
+
+  const handleSubmitBlogForm = (e) => {
     e.preventDefault();
-    if (validateForm()) {
+    if (validateBlogForm()) {
       const formData = new FormData();
-      formData.append('title', title);
-      formData.append('text', text);
-      formData.append('subtitle', subtitle);
-      formData.append('date', date);
-      if (img) {
-        formData.append('img', img);
+      formData.append('title', blogTitle);
+      formData.append('text', blogText);
+      formData.append('date', blogDate);
+      formData.append('subtitle', blogSubtitle);
+      if (blogImg) {
+        formData.append('img', blogImg);
       }
 
-      const url = editingId ? `/Blogdetails/update/${editingId}` : '/Blogdetails/createBlogdetailsRecord';
-      const method = editingId ? 'put' : 'post';
+      const url = editingBlogId ? `/Blogdetails/updateBlogdetailsRecord/${editingBlogId}` : '/Blogdetails/createBlogdetailsRecord';
+      const method = editingBlogId ? 'put' : 'post';
 
       axios({
         method: method,
@@ -123,92 +113,78 @@ const BlogDetail = () => {
         data: formData,
         headers: { 'Content-Type': 'multipart/form-data' },
       })
-        .then((resp) => {
-          console.log('resp', resp);
-          alert('Form submitted successfully');
-          setShow(true);
-          fetchData(); // Refresh data after successful submit
+        .then((response) => {
+          console.log('Blog details saved successfully:', response);
+          alert('Blog details saved successfully');
+          fetchBlogDetails(); // Refresh data after successful save
+          resetBlogForm();
         })
-        .catch((err) => {
-          console.log('err', err);
-          alert(`Error: ${err.response?.data?.message || 'Something went wrong!'}`);
+        .catch((error) => {
+          console.error('Error saving blog details:', error);
+          alert(`Error: ${error.response?.data?.message || 'Something went wrong!'}`);
         });
-
-      resetForm();
     }
   };
 
-  const handleEdit = (item) => {
-    setTitle(item.title);
-    setText(item.text);
-    setSubtitle(item.subtitle);
-    setDate(new Date(item.date).toISOString().split('T')[0]); // Set date in yyyy-mm-dd format
-    setImg(null);
-    setImgPreview(item.img); // Set the existing image URL
-    setEditingId(item.id);
-    setShow(true); // Show form when editing
+  const handleEditBlog = (blog) => {
+    setBlogTitle(blog.title);
+    setBlogText(blog.text);
+    setBlogDate(blog.date);
+    setBlogSubtitle(blog.subtitle);
+    setBlogImg(null); // Clear the image input field
+    setBlogImgPreview(blog.img); // Set the existing image URL
+    setEditingBlogId(blog.id);
+    setShowBlogForm(true); // Show the form for editing
   };
 
-  const handleDelete = (blogId) => {
-    axios
-      .delete(`/Blogdetails/delete/${blogId}`)
+  const handleDeleteBlog = (blogId) => {
+    axios.delete(`/Blogdetails/deleteBlogdetailsRecord/${blogId}`)
       .then((response) => {
-        console.log('Blog detail deleted successfully');
-        fetchData(); // Refresh data after successful delete
+        console.log('Blog details deleted successfully');
+        fetchBlogDetails(); // Refresh data after successful delete
       })
       .catch((error) => {
-        console.error('Error deleting blog detail:', error);
+        console.error('Error deleting blog details:', error);
       });
   };
 
   return (
-    <PageContainer title="Blog Details" description="This is a sample page for managing blog details">
-      <DashboardCard title="Blog Details">
-        <Button variant="contained" color="primary" onClick={show ? onClick1 : onClick} style={{ marginBottom: '20px' }}>
-          {show ? 'View Blog Details' : 'Add Blog Detail'}
-        </Button>
-        {show ? (
-          <form onSubmit={SubmitForm}>
+    <PageContainer title="Blog Details" description="Manage blog details">
+      <DashboardCard
+        title="Blog Details"
+        buttonName={showBlogForm ? 'View Blog Details' : 'Add Blog Details'}
+        onClick={showBlogForm ? () => resetBlogForm() : () => setShowBlogForm(true)}
+      >
+        {showBlogForm ? (
+          <form onSubmit={handleSubmitBlogForm}>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12}>
                 <TextField
                   fullWidth
                   label="Title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
+                  value={blogTitle}
+                  onChange={(e) => setBlogTitle(e.target.value)}
                   variant="outlined"
                 />
-                {errors.title && (
+                {blogErrors.title && (
                   <span className="error" style={{ color: 'red' }}>
-                    {errors.title}
+                    {blogErrors.title}
                   </span>
                 )}
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12}>
                 <TextField
                   fullWidth
                   label="Text"
-                  value={text}
-                  onChange={(e) => setText(e.target.value)}
+                  value={blogText}
+                  onChange={(e) => setBlogText(e.target.value)}
                   variant="outlined"
+                  multiline
+                  rows={4}
                 />
-                {errors.text && (
+                {blogErrors.text && (
                   <span className="error" style={{ color: 'red' }}>
-                    {errors.text}
-                  </span>
-                )}
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Subtitle"
-                  value={subtitle}
-                  onChange={(e) => setSubtitle(e.target.value)}
-                  variant="outlined"
-                />
-                {errors.subtitle && (
-                  <span className="error" style={{ color: 'red' }}>
-                    {errors.subtitle}
+                    {blogErrors.text}
                   </span>
                 )}
               </Grid>
@@ -216,38 +192,50 @@ const BlogDetail = () => {
                 <TextField
                   fullWidth
                   label="Date"
-                  type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
+                  value={blogDate}
+                  onChange={(e) => setBlogDate(e.target.value)}
                   variant="outlined"
-                  InputLabelProps={{ shrink: true }}
                 />
-                {errors.date && (
+                {blogErrors.date && (
                   <span className="error" style={{ color: 'red' }}>
-                    {errors.date}
+                    {blogErrors.date}
                   </span>
                 )}
               </Grid>
               <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Subtitle"
+                  value={blogSubtitle}
+                  onChange={(e) => setBlogSubtitle(e.target.value)}
+                  variant="outlined"
+                />
+                {blogErrors.subtitle && (
+                  <span className="error" style={{ color: 'red' }}>
+                    {blogErrors.subtitle}
+                  </span>
+                )}
+              </Grid>
+              <Grid item xs={12}>
                 <input
                   type="file"
                   onChange={handleFileChange}
                   accept="image/*"
                 />
-                {errors.img && (
+                {blogErrors.img && (
                   <span className="error" style={{ color: 'red' }}>
-                    {errors.img}
+                    {blogErrors.img}
                   </span>
                 )}
               </Grid>
               <Grid item xs={12}>
-                {imgPreview && (
+                {blogImgPreview && (
                   <div>
-                    <img src={imgPreview} alt="Preview" style={{ width: '100px', height: '100px', marginBottom: '10px' }} />
+                    <img src={blogImgPreview} alt="Preview" style={{ width: '100px', height: '100px', marginBottom: '10px' }} />
                   </div>
                 )}
                 <Button variant="contained" type="submit" color="primary">
-                  {editingId ? 'Update' : 'Submit'}
+                  {editingBlogId ? 'Update' : 'Submit'}
                 </Button>
               </Grid>
             </Grid>
@@ -258,41 +246,31 @@ const BlogDetail = () => {
               <TableHead>
                 <TableRow>
                   <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Title</TableCell>
-                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Text</TableCell>
-                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Subtitle</TableCell>
                   <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Date</TableCell>
+                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Subtitle</TableCell>
                   <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Image</TableCell>
                   <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Action</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {data.length === 0 ? (
-                  <div style={{ marginLeft: '10px', color: 'red' }}>
-                    <h3>No data found</h3>
-                  </div>
+                {blogData.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} style={{ textAlign: 'center' }}>No data found</TableCell>
+                  </TableRow>
                 ) : (
-                  data.map((item, id) => (
-                    <TableRow key={id}>
-                      <TableCell>{item?.title}</TableCell>
-                      <TableCell>{item?.text}</TableCell>
-                      <TableCell>{item?.subtitle}</TableCell>
-                      <TableCell>{new Date(item?.date).toLocaleDateString()}</TableCell>
+                  blogData.map((blog, index) => (
+                    <TableRow key={blog.id}>
+                      <TableCell>{blog.title}</TableCell>
+                      <TableCell>{blog.date}</TableCell>
+                      <TableCell>{blog.subtitle}</TableCell>
                       <TableCell>
-                        <img src={item?.img} alt={item?.title} style={{ width: '30px', height: '30px' }} />
+                        <img src={blog.img} alt="Thumbnail" style={{ width: '50px', height: '50px' }} />
                       </TableCell>
                       <TableCell>
-                        <IconButton
-                          aria-label="edit"
-                          style={{ color: 'blue' }}
-                          onClick={() => handleEdit(item)}
-                        >
+                        <IconButton aria-label="edit" onClick={() => handleEditBlog(blog)}>
                           <EditIcon />
                         </IconButton>
-                        <IconButton
-                          aria-label="delete"
-                          style={{ color: 'red' }}
-                          onClick={() => handleDelete(item?.id)}
-                        >
+                        <IconButton aria-label="delete" onClick={() => handleDeleteBlog(blog.id)}>
                           <DeleteIcon />
                         </IconButton>
                       </TableCell>
@@ -308,4 +286,5 @@ const BlogDetail = () => {
   );
 };
 
-export default BlogDetail;
+
+export default BlogDetail

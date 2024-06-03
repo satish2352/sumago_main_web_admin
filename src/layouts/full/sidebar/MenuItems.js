@@ -15,24 +15,39 @@ const Menuitems = [
     navlabel: true,
     subheader: 'Home',
   },
-  // {
-  //   id: uniqueId(),
-  //   title: 'Quotes Form',
-  //   icon: IconAperture,
-  //   href: '/quotes',
-  // },
+
   {
     id: uniqueId(),
-    title: 'Testimonials',
+    title: 'Homeslider',
     icon: IconAperture,
-    href: '/testimonials',
+    href: '/homeslider',
   },
+
+  {
+    id: uniqueId(),
+    title: 'HomeCards',
+    icon: IconAperture,
+    href: '/HomeCards',
+  },
+  {
+    id: uniqueId(),
+    title: 'Quotes Form',
+    icon: IconAperture,
+    href: '/quotes',
+  },
+  // {
+  //   id: uniqueId(),
+  //   title: 'Testimonials',
+  //   icon: IconAperture,
+  //   href: '/testimonials',
+  // },
   {
     id: uniqueId(),
     title: 'Valuable Clients',
     icon: IconAperture,
     href: '/clients',
   },
+
   {
     navlabel: true,
     subheader: 'Career',
@@ -68,6 +83,18 @@ const Menuitems = [
     href: '/internship-opening',
   },
   {
+    id: uniqueId(),
+    title: 'HomeTechnologies',
+    icon: IconAperture,
+    href: '/homeTechnologies',
+  },
+  {
+    id: uniqueId(),
+    title: 'WhySumago',
+    icon: IconAperture,
+    href: '/WhySumago',
+  },
+  {
     navlabel: true,
     subheader: 'Contact',
   },
@@ -86,6 +113,24 @@ const Menuitems = [
   {
     navlabel: true,
     subheader: 'about-us',
+  },
+  {
+    id: uniqueId(),
+    title: 'Mission',
+    icon: IconAperture,
+    href: '/mission',
+  },
+  {
+    id: uniqueId(),
+    title: 'BlogDetail',
+    icon: IconAperture,
+    href: '/blogDetail',
+  },
+  {
+    id: uniqueId(),
+    title: 'Vission',
+    icon: IconAperture,
+    href: '/vission',
   },
   {
     id: uniqueId(),
