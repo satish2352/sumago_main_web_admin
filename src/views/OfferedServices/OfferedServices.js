@@ -19,8 +19,8 @@ import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-const WhySumago = () => {
-  const [reasons, setReasons] = useState([]);
+const OfferedServices = () => {
+  const [services, setServices] = useState([]);
   const [title, setTitle] = useState('');
   const [text, setText] = useState('');
   const [img, setImg] = useState(null);
@@ -30,16 +30,16 @@ const WhySumago = () => {
   const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
-    fetchReasons();
+    fetchServices();
   }, []);
 
-  const fetchReasons = () => {
-    axios.get('/whysumago/getwhysumago')
+  const fetchServices = () => {
+    axios.get('/offeredservices/getofferedservices')
       .then((response) => {
-        setReasons(response.data);
+        setServices(response.data);
       })
       .catch((error) => {
-        console.error('Error fetching reasons:', error);
+        console.error('Error fetching offered services:', error);
       });
   };
 
@@ -90,7 +90,7 @@ const WhySumago = () => {
         formData.append('img', img);
       }
 
-      const url = editingId ? `/whysumago/updatewhysumagoRecord/${editingId}` : '/whysumago/createwhysumagoRecord';
+      const url = editingId ? `/offeredservices/updateofferedservicesRecord/${editingId}` : '/offeredservices/createofferedservicesRecord';
       const method = editingId ? 'put' : 'post';
 
       axios({
@@ -100,45 +100,43 @@ const WhySumago = () => {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
         .then((response) => {
-          console.log('Reason saved successfully:', response);
-          alert('Reason saved successfully');
-          fetchReasons(); // Refresh data after successful save
+          console.log('Service saved successfully:', response);
+          alert('Service saved successfully');
+          fetchServices(); // Refresh data after successful save
           resetForm();
         })
         .catch((error) => {
-          console.error('Error saving reason:', error);
+          console.error('Error saving service:', error);
           alert(`Error: ${error.response?.data?.message || 'Something went wrong!'}`);
         });
     }
   };
 
-  const handleEdit = (reason) => {
-    setTitle(reason.title);
-    setText(reason.text);
+  const handleEdit = (service) => {
+    setTitle(service.title);
+    setText(service.text);
     setImg(null); // Clear the image input field
-    setImgPreview(reason.img); // Set the existing image URL
-    setEditingId(reason.id);
+    setImgPreview(service.img); // Set the existing image URL
+    setEditingId(service.id);
     setShowForm(true); // Show the form for editing
   };
 
-  const handleDelete = (reasonId) => {
-    axios.delete(`/whysumago/deletewhysumagoRecord/${reasonId}`)
+  const handleDelete = (serviceId) => {
+    axios.delete(`/offeredservices/deleteofferedservicesRecord/${serviceId}`)
       .then((response) => {
-        console.log('Reason deleted successfully:', response);
-        alert('Reason deleted successfully');
-        fetchReasons(); // Refresh data after successful delete
+        console.log('Service deleted successfully');
+        fetchServices(); // Refresh data after successful delete
       })
       .catch((error) => {
-        console.error('Error deleting reason:', error);
-        alert(`Error: ${error.response?.data?.message || 'Something went wrong!'}`);
+        console.error('Error deleting service:', error);
       });
   };
 
   return (
-    <PageContainer title="Why Sumago?" description="Manage reasons for choosing Sumago">
+    <PageContainer title="Offered Services" description="Manage offered services">
       <DashboardCard
-        title="Why Sumago?"
-        buttonName={showForm ? 'View Reasons' : 'Add Reason'}
+        title="Offered Services"
+        buttonName={showForm ? 'View Services' : 'Add Service'}
         onClick={showForm ? () => resetForm() : () => setShowForm(true)}
       >
         {showForm ? (
@@ -208,23 +206,23 @@ const WhySumago = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {reasons.length === 0 ? (
+                {services.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={4} style={{ textAlign: 'center' }}>No data found</TableCell>
                   </TableRow>
                 ) : (
-                  reasons.map((reason, index) => (
-                    <TableRow key={reason.id}>
-                      <TableCell>{reason.title}</TableCell>
-                      <TableCell>{reason.text}</TableCell>
+                  services.map((service) => (
+                    <TableRow key={service.id}>
+                      <TableCell>{service.title}</TableCell>
+                      <TableCell>{service.text}</TableCell>
                       <TableCell>
-                        <img src={reason.img} alt="Thumbnail" style={{ width: '50px', height: '50px' }} />
+                        <img src={service.img} alt="Thumbnail" style={{ width: '50px', height: '50px' }} />
                       </TableCell>
                       <TableCell>
-                        <IconButton aria-label="edit" onClick={() => handleEdit(reason)}>
+                        <IconButton aria-label="edit" onClick={() => handleEdit(service)}>
                           <EditIcon />
                         </IconButton>
-                        <IconButton aria-label="delete" onClick={() => handleDelete(reason.id)}>
+                        <IconButton aria-label="delete" onClick={() => handleDelete(service.id)}>
                           <DeleteIcon />
                         </IconButton>
                       </TableCell>
@@ -240,4 +238,4 @@ const WhySumago = () => {
   );
 };
 
-export default WhySumago;
+export default OfferedServices;

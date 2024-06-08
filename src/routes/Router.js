@@ -24,6 +24,7 @@ import Vission from 'src/views/vission/Vission';
 import HomeTechnologies from 'src/views/HomeTechnologies/HomeTechnologies';
 import WhySumago from 'src/views/WhySumago/WhySumago';
 import HomeCards from 'src/views/HomeCards/HomeCards ';
+import OfferedServices from 'src/views/OfferedServices/OfferedServices';
 /* ***Layouts**** */
 const FullLayout = Loadable(lazy(() => import('../layouts/full/FullLayout')));
 const BlankLayout = Loadable(lazy(() => import('../layouts/blank/BlankLayout')));
@@ -57,6 +58,11 @@ const Router = [
         path: '/life-category-details',
         exact: true,
         element: <ProtectedRoutes Component={LifeCategoryDetails} />,
+      },
+      {
+        path: '/OfferedServices',
+        exact: true,
+        element: <ProtectedRoutes Component={OfferedServices} />,
       },
       { path: '/job-opening', exact: true, element: <ProtectedRoutes Component={JobOpening} /> },
       {
