@@ -18,7 +18,7 @@ import axios from 'axios';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-
+import { useNavigate } from 'react-router';
 const HomeTechnologies = () => {
   const [technologies, setTechnologies] = useState([]);
   const [title, setTitle] = useState('');
@@ -27,7 +27,7 @@ const HomeTechnologies = () => {
   const [errors, setErrors] = useState({});
   const [editingId, setEditingId] = useState(null);
   const [showForm, setShowForm] = useState(false);
-
+  const navigate = useNavigate();
   useEffect(() => {
     fetchTechnologies();
   }, []);
@@ -38,6 +38,9 @@ const HomeTechnologies = () => {
         setTechnologies(response.data);
       })
       .catch((error) => {
+        if (error?.response?.status === 401) {
+          navigate('/auth/login');
+        }
         console.error('Error fetching technologies:', error);
       });
   };
@@ -99,6 +102,9 @@ const HomeTechnologies = () => {
           resetForm();
         })
         .catch((error) => {
+          if (error?.response?.status === 401) {
+            navigate('/auth/login');
+          }
           console.error('Error saving technology:', error);
           alert(`Error: ${error.response?.data?.message || 'Something went wrong!'}`);
         });
@@ -120,6 +126,9 @@ const HomeTechnologies = () => {
         fetchTechnologies(); // Refresh data after successful delete
       })
       .catch((error) => {
+        if (error?.response?.status === 401) {
+          navigate('/auth/login');
+        }
         console.error('Error deleting technology:', error);
       });
   };

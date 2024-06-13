@@ -21,6 +21,7 @@ import axios from 'axios';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useNavigate } from 'react-router';
 
 const LifeCategory = () => {
   const [show, setShow] = useState(false);
@@ -28,7 +29,7 @@ const LifeCategory = () => {
   const [errors, setErrors] = useState({});
   const [data, setData] = useState([]);
   const [editingId, setEditingId] = useState(null);
-
+  const navigate = useNavigate();
   useEffect(() => {
     axios
       .get('/life_category/find')
@@ -36,6 +37,9 @@ const LifeCategory = () => {
         setData(result.data);
       })
       .catch((err) => {
+        if (err?.response?.status === 401) {
+          navigate('/auth/login');
+        }
         console.log('err', err);
       });
   }, [show]);
@@ -81,6 +85,9 @@ const LifeCategory = () => {
             setShow(true);
           })
           .catch((err) => {
+            if (err?.response?.status === 401) {
+              navigate('/auth/login');
+            }
             console.log('err', err);
           });
       } else {
@@ -94,6 +101,9 @@ const LifeCategory = () => {
             setShow(true);
           })
           .catch((err) => {
+            if (err?.response?.status === 401) {
+              navigate('/auth/login');
+            }
             console.log('err', err);
           });
       }
@@ -120,10 +130,16 @@ const LifeCategory = () => {
             setData(result.data);
           })
           .catch((err) => {
+            if (err?.response?.status === 401) {
+              navigate('/auth/login');
+            }
             console.log('err', err);
           });
       })
       .catch((error) => {
+        if (error?.response?.status === 401) {
+          navigate('/auth/login');
+        }
         console.error('Error deleting life_category:', error);
       });
   };

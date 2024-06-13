@@ -21,7 +21,7 @@ import axios from 'axios';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-
+import { useNavigate } from 'react-router';
 const InternshipOpening = () => {
   const [show, setShow] = useState(false);
   const [designation, setDesignation] = useState('');
@@ -31,7 +31,7 @@ const InternshipOpening = () => {
   const [errors, setErrors] = useState({});
   const [data, setData] = useState([]);
   const [editingId, setEditingId] = useState(null);
-
+  const navigate = useNavigate();
   useEffect(() => {
     axios
       .get('internship/find')
@@ -39,6 +39,9 @@ const InternshipOpening = () => {
         setData(result.data);
       })
       .catch((err) => {
+        if (err?.response?.status === 401) {
+          navigate('/auth/login');
+        }
         console.log('err', err);
       });
   }, [show]);
@@ -111,6 +114,9 @@ const InternshipOpening = () => {
           setEditingId(null);
         })
         .catch((err) => {
+          if (err?.response?.status === 401) {
+            navigate('/auth/login');
+          }
           console.log('err', err);
           alert(`Error: ${err.response?.data?.message || 'Something went wrong!'}`);
         });
@@ -144,10 +150,16 @@ const InternshipOpening = () => {
             setData(result.data);
           })
           .catch((err) => {
+            if (err?.response?.status === 401) {
+              navigate('/auth/login');
+            }
             console.log('err', err);
           });
       })
       .catch((error) => {
+        if (error?.response?.status === 401) {
+          navigate('/auth/login');
+        }
         console.error('Error deleting internship:', error);
       });
   };

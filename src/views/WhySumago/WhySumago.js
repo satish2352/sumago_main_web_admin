@@ -18,7 +18,7 @@ import axios from 'axios';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-
+import { useNavigate } from 'react-router';
 const WhySumago = () => {
   const [reasons, setReasons] = useState([]);
   const [title, setTitle] = useState('');
@@ -28,7 +28,7 @@ const WhySumago = () => {
   const [errors, setErrors] = useState({});
   const [editingId, setEditingId] = useState(null);
   const [showForm, setShowForm] = useState(false);
-
+  const navigate = useNavigate();
   useEffect(() => {
     fetchReasons();
   }, []);
@@ -39,6 +39,9 @@ const WhySumago = () => {
         setReasons(response.data);
       })
       .catch((error) => {
+        if (error?.response?.status === 401) {
+          navigate('/auth/login');
+        }
         console.error('Error fetching reasons:', error);
       });
   };
@@ -106,6 +109,9 @@ const WhySumago = () => {
           resetForm();
         })
         .catch((error) => {
+          if (error?.response?.status === 401) {
+            navigate('/auth/login');
+          }
           console.error('Error saving reason:', error);
           alert(`Error: ${error.response?.data?.message || 'Something went wrong!'}`);
         });
@@ -129,6 +135,9 @@ const WhySumago = () => {
         fetchReasons(); // Refresh data after successful delete
       })
       .catch((error) => {
+        if (error?.response?.status === 401) {
+          navigate('/auth/login');
+        }
         console.error('Error deleting reason:', error);
         alert(`Error: ${error.response?.data?.message || 'Something went wrong!'}`);
       });

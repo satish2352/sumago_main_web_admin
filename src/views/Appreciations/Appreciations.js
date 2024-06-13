@@ -19,7 +19,7 @@ import axios from 'axios';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-
+import { useNavigate } from 'react-router';
 const Appreciations = () => {
   const [show, setShow] = useState(false);
   const [name, setName] = useState('');
@@ -29,7 +29,7 @@ const Appreciations = () => {
   const [errors, setErrors] = useState({});
   const [data, setData] = useState([]);
   const [editingId, setEditingId] = useState(null);
-
+  const navigate = useNavigate();
   useEffect(() => {
     fetchData();
   }, []);
@@ -41,6 +41,9 @@ const Appreciations = () => {
         setData(result.data);
       })
       .catch((err) => {
+        if (err?.response?.status === 401) {
+          navigate('/auth/login');
+        }
         console.log('err', err);
       });
   };
@@ -116,6 +119,9 @@ const Appreciations = () => {
           fetchData(); // Refresh data after successful submit
         })
         .catch((err) => {
+          if (err?.response?.status === 401) {
+            navigate('/auth/login');
+          }
           console.log('err', err);
           alert(`Error: ${err.response?.data?.message || 'Something went wrong!'}`);
         });
@@ -141,6 +147,9 @@ const Appreciations = () => {
         fetchData(); // Refresh data after successful delete
       })
       .catch((error) => {
+        if (error?.response?.status === 401) {
+          navigate('/auth/login');
+        }
         console.error('Error deleting team record:', error);
       });
   };

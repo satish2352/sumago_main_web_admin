@@ -14,6 +14,7 @@ import {
   TableRow,
   TableCell,
   TableBody,
+  Badge,
 } from '@mui/material';
 import PageContainer from 'src/components/container/PageContainer';
 import DashboardCard from '../../components/shared/DashboardCard';
@@ -22,8 +23,11 @@ import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import * as XLSX from 'xlsx';
+import { useNavigate } from 'react-router';
+import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 const ApplyNowForm = () => {
   const [data, setData] = useState([]);
+  const navigate = useNavigate();
   useEffect(() => {
     axios
       .get('applynow/find')
@@ -31,12 +35,14 @@ const ApplyNowForm = () => {
         setData(result.data);
       })
       .catch((err) => {
+        if (err?.response?.status === 401) {
+          navigate('/auth/login');
+        }
         console.log('err', err);
       });
   }, []);
 
   const handleDelete = (applynow) => {
-    console.log('applynow', applynow);
     axios
       .delete(`applynow/delete/${applynow}`)
       .then((response) => {
@@ -48,10 +54,16 @@ const ApplyNowForm = () => {
             setData(result.data);
           })
           .catch((err) => {
+            if (err?.response?.status === 401) {
+              navigate('/auth/login');
+            }
             console.log('err', err);
           });
       })
       .catch((error) => {
+        if (error?.response?.status === 401) {
+          navigate('/auth/login');
+        }
         console.error('Error deleting applynow:', error);
       });
   };
@@ -64,12 +76,22 @@ const ApplyNowForm = () => {
   return (
     <PageContainer title="ApplyNow Form" description="this is Sample page">
       <DashboardCard title="">
-        <Grid container justifyContent="space-between" alignItems="center" style={{ marginBottom: '20px' }}>
+        <Grid
+          container
+          justifyContent="space-between"
+          alignItems="center"
+          style={{ marginBottom: '20px' }}
+        >
           <Grid item>
             <Typography variant="h6">ApplyNow Form</Typography>
           </Grid>
           <Grid item>
-            <Button variant="contained" color="primary" onClick={downloadExcel} style={{ marginBottom: '20px' }}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={downloadExcel}
+              style={{ marginBottom: '20px' }}
+            >
               Download Excel
             </Button>
           </Grid>
@@ -119,8 +141,10 @@ const ApplyNowForm = () => {
                           <TableCell>{item?.address}</TableCell>
                           <TableCell>
                             {item?.cv && (
-                              <a href={item?.cv} style={{ textDecoration: 'none' }} download>
-                                CV
+                              <a href={item?.cv} style={{ textDecoration: 'none', color:"green" }} download>
+                                <Badge color="success" badgeContent={0}>
+                                  <CloudDownloadIcon />
+                                </Badge>
                               </a>
                             )}
                           </TableCell>
@@ -128,10 +152,12 @@ const ApplyNowForm = () => {
                             {item?.cover_letter && (
                               <a
                                 href={item?.cover_letter}
-                                style={{ textDecoration: 'none' }}
+                                style={{ textDecoration: 'none', color:"green" }}
                                 download
                               >
-                                Cover Letter
+                                <Badge color="success" badgeContent={0}>
+                                  <CloudDownloadIcon />
+                                </Badge>
                               </a>
                             )}
                           </TableCell>

@@ -6,7 +6,7 @@ import axios from 'axios';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-
+import { useNavigate } from 'react-router';
 const Mission = () => {
   const [id, setId] = useState(null);
   const [show, setShow] = useState(false);
@@ -14,11 +14,14 @@ const Mission = () => {
   const [img, setImg] = useState(null);
   const [errors, setErrors] = useState({});
   const [data, setData] = useState([]);
-
+  const navigate = useNavigate();
   useEffect(() => {
     axios.get("/aboutmission/getAllaboutmissionRecord").then((result) => {
       setData(result.data);
     }).catch((err) => {
+      if (err?.response?.status === 401) {
+        navigate('/auth/login');
+      }
       console.log("err", err);
     });
   }, [show]);
@@ -66,6 +69,9 @@ const Mission = () => {
           alert('Form submitted successfully');
           setShow(true);
         }).catch((err) => {
+          if (err?.response?.status === 401) {
+            navigate('/auth/login');
+          }
           console.log("err", err);
         });
 
@@ -83,10 +89,16 @@ const Mission = () => {
         axios.get("/aboutmission/getAllaboutmissionRecord").then((result) => {
           setData(result.data);
         }).catch((err) => {
+          if (err?.response?.status === 401) {
+            navigate('/auth/login');
+          }
           console.log("err", err);
         });
       })
       .catch((error) => {
+        if (error?.response?.status === 401) {
+          navigate('/auth/login');
+        }
         console.error('Error deleting mission record:', error);
       });
   };
@@ -101,7 +113,7 @@ const Mission = () => {
   return (
     <PageContainer title="About Mission" description="this is Sample page">
       <DashboardCard title="About Mission" buttonName={show ? "View Records" : "Add Record"} onClick={show ? onClick1 : onClick}>
-        {show ? (
+        {!show ? (
           <TableContainer component={Paper}>
             <Table stickyHeader>
               <TableHead>

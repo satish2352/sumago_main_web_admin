@@ -22,6 +22,7 @@ import axios from 'axios';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useNavigate } from 'react-router';
 
 const LifeCategoryDetails = () => {
   const [show, setShow] = useState(false);
@@ -31,6 +32,7 @@ const LifeCategoryDetails = () => {
   const [data, setData] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [categories, setCategories] = useState([]);
+  const navigate = useNavigate();
   useEffect(() => {
     axios
       .get('/life_category/find')
@@ -40,6 +42,9 @@ const LifeCategoryDetails = () => {
         console.log(result.data)
       })
       .catch((err) => {
+        if (err?.response?.status === 401) {
+          navigate('/auth/login');
+        }
         console.log('Error fetching categories:', err);
       });
   }, []);
@@ -50,6 +55,9 @@ const LifeCategoryDetails = () => {
         setData(result.data);
       })
       .catch((err) => {
+        if (err?.response?.status === 401) {
+          navigate('/auth/login');
+        }
         console.log('err', err);
       });
   }, [show]);
@@ -104,6 +112,9 @@ const LifeCategoryDetails = () => {
             setEditingId(null);
           })
           .catch((err) => {
+            if (err?.response?.status === 401) {
+              navigate('/auth/login');
+            }
             console.log('err', err);
           });
       } else {
@@ -117,6 +128,9 @@ const LifeCategoryDetails = () => {
             setShow(true);
           })
           .catch((err) => {
+            if (err?.response?.status === 401) {
+              navigate('/auth/login');
+            }
             console.log('err', err);
           });
       }
@@ -144,10 +158,16 @@ const LifeCategoryDetails = () => {
             setData(result.data);
           })
           .catch((err) => {
+            if (err?.response?.status === 401) {
+              navigate('/auth/login');
+            }
             console.log('err', err);
           });
       })
       .catch((error) => {
+        if (error?.response?.status === 401) {
+          navigate('/auth/login');
+        }
         console.error('Error deleting life_category_details:', error);
       });
   };

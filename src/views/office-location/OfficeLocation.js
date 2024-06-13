@@ -21,6 +21,7 @@ import axios from 'axios';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useNavigate } from 'react-router';
 
 const OfficeLocation = () => {
   const [id, setId] = useState();
@@ -32,7 +33,7 @@ const OfficeLocation = () => {
   const [errors, setErrors] = useState({});
   const [data, setData] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
-
+  const navigate = useNavigate();
   function findData() {
     axios
       .get('location/getlocation')
@@ -40,6 +41,9 @@ const OfficeLocation = () => {
         setData(result.data);
       })
       .catch((err) => {
+        if (err?.response?.status === 401) {
+          navigate('/auth/login');
+        }
         console.log('err', err);
       });
   }
@@ -104,6 +108,9 @@ const OfficeLocation = () => {
           findData();
         })
         .catch((err) => {
+          if (err?.response?.status === 401) {
+            navigate('/auth/login');
+          }
           console.log('err', err);
         });
       setAddress('');
@@ -123,6 +130,9 @@ const OfficeLocation = () => {
         findData();
       })
       .catch((error) => {
+        if (error?.response?.status === 401) {
+          navigate('/auth/login');
+        }
         console.error('Error deleting location:', error);
       });
   };
@@ -151,6 +161,9 @@ const OfficeLocation = () => {
         console.log('data edited successfully');
       })
       .catch((error) => {
+        if (error?.response?.status === 401) {
+          navigate('/auth/login');
+        }
         console.error('Error updating location:', error);
       });
   };

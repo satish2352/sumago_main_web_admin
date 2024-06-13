@@ -21,6 +21,7 @@ import axios from 'axios';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useNavigate } from 'react-router';
 
 const ValuableClients = () => {
   const [id, setId] = useState();
@@ -30,6 +31,7 @@ const ValuableClients = () => {
   const [errors, setErrors] = useState({});
   const [data, setData] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
+  const navigate = useNavigate();
   function findData() {
     axios
       .get('/clientCount/getClientsRecord')
@@ -38,6 +40,9 @@ const ValuableClients = () => {
       })
       .catch((err) => {
         console.log('err', err);
+        if (err?.response?.status === 401) {
+          navigate('/auth/login');
+        }
       });
   }
   useEffect(() => {
@@ -90,6 +95,9 @@ const ValuableClients = () => {
           findData();
         })
         .catch((err) => {
+          if (err?.response?.status === 401) {
+            navigate('/auth/login');
+          }
           console.log('err', err);
         });
       setCounter('');
@@ -109,6 +117,9 @@ const ValuableClients = () => {
         findData();
       })
       .catch((error) => {
+        if (error?.response?.status === 401) {
+          navigate('/auth/login');
+        }
         console.error('Error deleting clientCount:', error);
       });
   };
@@ -135,6 +146,9 @@ const ValuableClients = () => {
         console.log('Data edited successfully');
       })
       .catch((error) => {
+        if (error?.response?.status === 401) {
+          navigate('/auth/login');
+        }
         console.error('Error updating clientCount:', error);
       });
   };

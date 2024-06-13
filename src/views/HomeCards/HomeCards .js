@@ -18,6 +18,7 @@ import axios from 'axios';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useNavigate } from 'react-router';
 
 const HomeCards = () => {
   const [cards, setCards] = useState([]);
@@ -27,7 +28,7 @@ const HomeCards = () => {
   const [errors, setErrors] = useState({});
   const [editingId, setEditingId] = useState(null);
   const [showForm, setShowForm] = useState(false);
-
+  const navigate = useNavigate();
   useEffect(() => {
     fetchCards();
   }, []);
@@ -38,6 +39,9 @@ const HomeCards = () => {
         setCards(response.data);
       })
       .catch((error) => {
+        if (error?.response?.status === 401) {
+          navigate('/auth/login');
+        }
         console.error('Error fetching home cards:', error);
       });
   };
@@ -99,6 +103,9 @@ const HomeCards = () => {
           resetForm();
         })
         .catch((error) => {
+          if (error?.response?.status === 401) {
+            navigate('/auth/login');
+          }
           console.error('Error saving card:', error);
           alert(`Error: ${error.response?.data?.message || 'Something went wrong!'}`);
         });
@@ -120,6 +127,9 @@ const HomeCards = () => {
         fetchCards(); // Refresh data after successful delete
       })
       .catch((error) => {
+        if (error?.response?.status === 401) {
+          navigate('/auth/login');
+        }
         console.error('Error deleting card:', error);
       });
   };

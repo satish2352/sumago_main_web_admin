@@ -17,10 +17,11 @@ import DashboardCard from '../../components/shared/DashboardCard';
 import axios from 'axios';
 import DeleteIcon from '@mui/icons-material/Delete';
 import * as XLSX from 'xlsx';
+import { useNavigate } from 'react-router';
 
 const QuotesForm = () => {
   const [data, setData] = useState([]);
-
+  const navigate = useNavigate();
   useEffect(() => {
     axios
       .get('quotes/find')
@@ -28,6 +29,9 @@ const QuotesForm = () => {
         setData(result.data);
       })
       .catch((err) => {
+        if (err?.response?.status === 401) {
+          navigate('/auth/login');
+        }
         console.log('err', err);
       });
   }, []);
@@ -43,10 +47,16 @@ const QuotesForm = () => {
             setData(result.data);
           })
           .catch((err) => {
+            if (err?.response?.status === 401) {
+              navigate('/auth/login');
+            }
             console.log('Error fetching quotes:', err);
           });
       })
       .catch((error) => {
+        if (error?.response?.status === 401) {
+          navigate('/auth/login');
+        }
         console.error('Error deleting quote:', error);
       });
   };
@@ -61,7 +71,12 @@ const QuotesForm = () => {
   return (
     <PageContainer title="Quotes Form" description="This is Sample page">
       <DashboardCard>
-        <Grid container justifyContent="space-between" alignItems="center" style={{ marginBottom: '20px' }}>
+        <Grid
+          container
+          justifyContent="space-between"
+          alignItems="center"
+          style={{ marginBottom: '20px' }}
+        >
           <Grid item>
             <Typography variant="h6">Quotes Form</Typography>
           </Grid>
@@ -72,7 +87,9 @@ const QuotesForm = () => {
           </Grid>
         </Grid>
 
-        <TableContainer component={Paper} style={{ maxHeight: '70vh' }}> {/* Adjust maxHeight as needed */}
+        <TableContainer component={Paper} style={{ maxHeight: '70vh' }}>
+          {' '}
+          {/* Adjust maxHeight as needed */}
           <Table>
             <TableHead>
               <TableRow>
@@ -84,6 +101,7 @@ const QuotesForm = () => {
                 <TableCell>Other Service</TableCell>
                 <TableCell>Address</TableCell>
                 <TableCell>Comment</TableCell>
+                <TableCell>Date</TableCell>
                 <TableCell>Action</TableCell>
               </TableRow>
             </TableHead>
@@ -97,16 +115,21 @@ const QuotesForm = () => {
               ) : (
                 data.map((item, id) => (
                   <TableRow key={id}>
-                    <TableCell>{id + 1}</TableCell>
-                    <TableCell>{item?.name}</TableCell>
-                    <TableCell>{item?.email}</TableCell>
-                    <TableCell>{item?.phone}</TableCell>
-                    <TableCell>{item?.service}</TableCell>
-                    <TableCell>{item?.other_service}</TableCell>
-                    <TableCell>{item?.address}</TableCell>
-                    <TableCell>{item?.comment}</TableCell>
+                    <TableCell style={{ overflowWrap: 'anywhere' }}>{id + 1}</TableCell>
+                    <TableCell style={{ overflowWrap: 'anywhere' }}>{item?.name}</TableCell>
+                    <TableCell style={{ overflowWrap: 'anywhere' }}>{item?.email}</TableCell>
+                    <TableCell style={{ overflowWrap: 'anywhere' }}>{item?.phone}</TableCell>
+                    <TableCell style={{ overflowWrap: 'anywhere' }}>{item?.service}</TableCell>
+                    <TableCell style={{ overflowWrap: 'anywhere' }}>{item?.other_service}</TableCell>
+                    <TableCell style={{ overflowWrap: 'anywhere' }}>{item?.address}</TableCell>
+                    <TableCell style={{ overflowWrap: 'anywhere' }}>{item?.comment}</TableCell>
+                    <TableCell>{item?.created_at}</TableCell>
                     <TableCell>
-                      <IconButton aria-label="delete" style={{ color: 'red' }} onClick={() => handleDelete(item?.id)}>
+                      <IconButton
+                        aria-label="delete"
+                        style={{ color: 'red' }}
+                        onClick={() => handleDelete(item?.id)}
+                      >
                         <DeleteIcon />
                       </IconButton>
                     </TableCell>

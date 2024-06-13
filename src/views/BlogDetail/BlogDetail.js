@@ -18,7 +18,7 @@ import axios from 'axios';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-
+import { useNavigate } from 'react-router';
 const BlogDetail = () => {
   const [blogData, setBlogData] = useState([]);
   const [blogTitle, setBlogTitle] = useState('');
@@ -30,7 +30,7 @@ const BlogDetail = () => {
   const [blogErrors, setBlogErrors] = useState({});
   const [editingBlogId, setEditingBlogId] = useState(null);
   const [showBlogForm, setShowBlogForm] = useState(false);
-
+  const navigate = useNavigate();
   useEffect(() => {
     fetchBlogDetails();
   }, []);
@@ -41,6 +41,9 @@ const BlogDetail = () => {
         setBlogData(response.data);
       })
       .catch((error) => {
+        if (error?.response?.status === 401) {
+          navigate('/auth/login');
+        }
         console.error('Error fetching blog details:', error);
       });
   };
@@ -120,6 +123,9 @@ const BlogDetail = () => {
           resetBlogForm();
         })
         .catch((error) => {
+          if (error?.response?.status === 401) {
+            navigate('/auth/login');
+          }
           console.error('Error saving blog details:', error);
           alert(`Error: ${error.response?.data?.message || 'Something went wrong!'}`);
         });
@@ -144,6 +150,9 @@ const BlogDetail = () => {
         fetchBlogDetails(); // Refresh data after successful delete
       })
       .catch((error) => {
+        if (error?.response?.status === 401) {
+          navigate('/auth/login');
+        }
         console.error('Error deleting blog details:', error);
       });
   };

@@ -21,8 +21,10 @@ import axios from 'axios';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useNavigate } from 'react-router';
 import * as XLSX from 'xlsx';
 const  Brocherdetail = () => {
+  const navigate = useNavigate();
   const [data, setData] = useState([]);
   useEffect(() => {
     axios
@@ -31,6 +33,9 @@ const  Brocherdetail = () => {
         setData(result.data);
       })
       .catch((err) => {
+        if (err?.response?.status === 401) {
+          navigate('/auth/login');
+        }
         console.log('err', err);
       });
   }, []);
