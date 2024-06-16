@@ -24,7 +24,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useNavigate } from 'react-router';
 
 const LifeCategory = () => {
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState(true);
   const [category, setCategory] = useState('');
   const [errors, setErrors] = useState({});
   const [data, setData] = useState([]);
@@ -211,7 +211,7 @@ const LifeCategory = () => {
                 )}
               </Grid>
               <Grid item xs={12}>
-                <Button variant="contained" type="submit" color="primary">
+                <Button variant="contained" type="submit" color={editingId ? 'success' : 'primary'}>
                   {editingId ? 'Update' : 'Submit'}
                 </Button>
               </Grid>

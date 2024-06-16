@@ -100,6 +100,12 @@ const Menuitems = [
   },
   {
     id: uniqueId(),
+    title: 'Header Contact',
+    icon: IconAperture,
+    href: '/headerDetails',
+  },
+  {
+    id: uniqueId(),
     title: 'Office Location',
     icon: IconAperture,
     href: '/office-location',

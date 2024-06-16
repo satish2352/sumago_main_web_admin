@@ -32,6 +32,7 @@ const BlankLayout = Loadable(lazy(() => import('../layouts/blank/BlankLayout')))
 /* ****Pages***** */
 const Dashboard = Loadable(lazy(() => import('../views/dashboard/Dashboard')));
 const ValuableClients = Loadable(lazy(() => import('../views/valuable-clients/ValuableClients')));
+const HeaderContact = Loadable(lazy(() => import('../views/HeaderContact/HeaderContact')));
 const Testimonials = Loadable(lazy(() => import('../views/testimonials/Testimonials')));
 const Icons = Loadable(lazy(() => import('../views/icons/Icons')));
 const TypographyPage = Loadable(lazy(() => import('../views/utilities/TypographyPage')));
@@ -74,6 +75,11 @@ const Router = [
         path: '/office-location',
         exact: true,
         element: <ProtectedRoutes Component={OfficeLocation} />,
+      },
+      {
+        path: '/headerDetails',
+        exact: true,
+        element: <ProtectedRoutes Component={HeaderContact} />,
       },
       {
         path: '/brocherdetail',

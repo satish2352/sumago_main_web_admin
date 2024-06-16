@@ -103,7 +103,7 @@ const Homeslider = () => {
       })
         .then((resp) => {
           console.log('resp', resp);
-          alert('Form submitted successfully');
+          alert(`${id ? 'Form updated successfully' : 'Form submitted successfully'}`);
           setShow(true);
           resetForm();
         })
@@ -145,7 +145,7 @@ const Homeslider = () => {
     setId(data.id);
     setTitle(data.title);
     setText(data.text);
-    setImg(null); // Assume new image upload is optional
+    setImg(data.img); // Assume new image upload is optional
     setShow(false);
   };
 
@@ -181,7 +181,7 @@ const Homeslider = () => {
                         <img
                           src={item.img}
                           alt={item.title}
-                          style={{ width: '100px', height: '100px' }}
+                          style={{ width: '50px', height: '50px' }}
                         />
                       </TableCell>
                       <TableCell>
@@ -254,11 +254,7 @@ const Homeslider = () => {
                 </div>
               </Grid>
               <Grid item xs={12}>
-                <Button
-                  variant="contained"
-                  type="submit"
-                  color={`${!isEdit ? 'success' : 'primary'}`}
-                >
+                <Button variant="contained" type="submit" color={`${id ? 'success' : 'primary'}`}>
                   Submit
                 </Button>
               </Grid>

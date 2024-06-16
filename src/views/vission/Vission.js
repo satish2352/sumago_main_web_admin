@@ -67,7 +67,7 @@ const Vission = () => {
         .then((resp) => {
           console.log("resp", resp);
           alert('Form submitted successfully');
-          setShow(true);
+          setShow(false);
         }).catch((err) => {
           if (err?.response?.status === 401) {
             navigate('/auth/login');
@@ -107,7 +107,7 @@ const Vission = () => {
     setId(data.id);
     setTitle(data.title);
     setImg(null); // Assume new image upload is optional
-    setShow(false);
+    setShow(true);
   };
 
   return (

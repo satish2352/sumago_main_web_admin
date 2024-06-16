@@ -44,13 +44,13 @@ const CompanyCultureCategories = () => {
   }, [show]);
 
   const onClick = () => {
-    setShow(true);
+    setShow(false);
     setCategory('');
     setErrors({});
     setEditingId(null);
   };
   const onClick1 = () => {
-    setShow(false);
+    setShow(true);
   };
 
   const validateForm = () => {
@@ -81,7 +81,7 @@ const CompanyCultureCategories = () => {
             console.log('resp', resp);
             alert('Category updated successfully');
             setEditingId(null);
-            setShow(true);
+            setShow(false);
           })
           .catch((err) => {
             if (err?.response?.status === 401) {
@@ -97,7 +97,7 @@ const CompanyCultureCategories = () => {
           .then((resp) => {
             console.log('resp', resp);
             alert('Form submitted successfully');
-            setShow(true);
+            setShow(false);
           })
           .catch((err) => {
             if (err?.response?.status === 401) {
@@ -114,7 +114,7 @@ const CompanyCultureCategories = () => {
   const handleEdit = (item) => {
     setCategory(item.category);
     setEditingId(item.id);
-    setShow(false);
+    setShow(true);
   };
 
   const handleDelete = (life_category) => {
@@ -147,8 +147,8 @@ const CompanyCultureCategories = () => {
     <PageContainer title="Category" description="This is a sample page">
       <DashboardCard
         title="Category"
-        buttonName={show ? 'Add Category' : 'View Category'}
-        onClick={show ? onClick1 : onClick}
+        buttonName={!show ? 'Add Category' : 'View Category'}
+        onClick={!show ? onClick1 : onClick}
       >
         {show ? (
           <form onSubmit={SubmitForm}>
@@ -168,7 +168,7 @@ const CompanyCultureCategories = () => {
                 )}
               </Grid>
               <Grid item xs={12}>
-                <Button variant="contained" type="submit" color="primary">
+                <Button variant="contained" type="submit" color={editingId ? "success" : "primary"}>
                   {editingId ? 'Update' : 'Submit'}
                 </Button>
               </Grid>

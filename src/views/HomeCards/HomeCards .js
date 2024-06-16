@@ -34,7 +34,8 @@ const HomeCards = () => {
   }, []);
 
   const fetchCards = () => {
-    axios.get('/homecards/gethomecards')
+    axios
+      .get('/homecards/gethomecards')
       .then((response) => {
         setCards(response.data);
       })
@@ -87,7 +88,9 @@ const HomeCards = () => {
         formData.append('img', img);
       }
 
-      const url = editingId ? `/homecards/updatehomecardsRecord/${editingId}` : '/homecards/createhomecardsRecord';
+      const url = editingId
+        ? `/homecards/updatehomecardsRecord/${editingId}`
+        : '/homecards/createhomecardsRecord';
       const method = editingId ? 'put' : 'post';
 
       axios({
@@ -121,7 +124,8 @@ const HomeCards = () => {
   };
 
   const handleDelete = (cardId) => {
-    axios.delete(`/homecards/deletehomecardsRecord/${cardId}`)
+    axios
+      .delete(`/homecards/deletehomecardsRecord/${cardId}`)
       .then((response) => {
         console.log('Card deleted successfully');
         fetchCards(); // Refresh data after successful delete
@@ -159,11 +163,7 @@ const HomeCards = () => {
                 )}
               </Grid>
               <Grid item xs={12}>
-                <input
-                  type="file"
-                  onChange={handleFileChange}
-                  accept="image/*"
-                />
+                <input type="file" onChange={handleFileChange} accept="image/*" />
                 {errors.img && (
                   <span className="error" style={{ color: 'red' }}>
                     {errors.img}
@@ -173,10 +173,14 @@ const HomeCards = () => {
               <Grid item xs={12}>
                 {imgPreview && (
                   <div>
-                    <img src={imgPreview} alt="Preview" style={{ width: '100px', height: '100px', marginBottom: '10px' }} />
+                    <img
+                      src={imgPreview}
+                      alt="Preview"
+                      style={{ width: '100px', height: '100px', marginBottom: '10px' }}
+                    />
                   </div>
                 )}
-                <Button variant="contained" type="submit" color="primary">
+                <Button variant="contained" type="submit" color={editingId ? 'success' : 'primary'}>
                   {editingId ? 'Update' : 'Submit'}
                 </Button>
               </Grid>
@@ -195,20 +199,36 @@ const HomeCards = () => {
               <TableBody>
                 {cards.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={3} style={{ textAlign: 'center' }}>No data found</TableCell>
+                    <TableCell colSpan={3} style={{ textAlign: 'initial', color:"red" }}>
+                    <div style={{ marginLeft: '10px', color: 'red' }}>
+                    <h3>No data found</h3>
+                  </div>
+                    </TableCell>
                   </TableRow>
                 ) : (
                   cards.map((card) => (
                     <TableRow key={card.id}>
                       <TableCell>{card.title}</TableCell>
                       <TableCell>
-                        <img src={card.img} alt="Thumbnail" style={{ width: '50px', height: '50px' }} />
+                        <img
+                          src={card.img}
+                          alt="Thumbnail"
+                          style={{ width: '50px', height: '50px' }}
+                        />
                       </TableCell>
                       <TableCell>
-                        <IconButton aria-label="edit" onClick={() => handleEdit(card)}>
+                        <IconButton
+                          style={{ color: 'blue' }}
+                          aria-label="edit"
+                          onClick={() => handleEdit(card)}
+                        >
                           <EditIcon />
                         </IconButton>
-                        <IconButton aria-label="delete" onClick={() => handleDelete(card.id)}>
+                        <IconButton
+                          style={{ color: 'red' }}
+                          aria-label="delete"
+                          onClick={() => handleDelete(card.id)}
+                        >
                           <DeleteIcon />
                         </IconButton>
                       </TableCell>

@@ -108,7 +108,7 @@ const QuotesForm = () => {
             <TableBody>
               {data.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={9} style={{ textAlign: 'center', color: 'red' }}>
+                  <TableCell colSpan={9} style={{ textAlign: 'initial', color: 'red' }}>
                     <Typography variant="h6">No data found</Typography>
                   </TableCell>
                 </TableRow>

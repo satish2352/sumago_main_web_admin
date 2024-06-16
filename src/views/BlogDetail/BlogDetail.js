@@ -36,7 +36,8 @@ const BlogDetail = () => {
   }, []);
 
   const fetchBlogDetails = () => {
-    axios.get('/Blogdetails/getBlogdetails')
+    axios
+      .get('/Blogdetails/getBlogdetails')
       .then((response) => {
         setBlogData(response.data);
       })
@@ -107,7 +108,9 @@ const BlogDetail = () => {
         formData.append('img', blogImg);
       }
 
-      const url = editingBlogId ? `/Blogdetails/updateBlogdetailsRecord/${editingBlogId}` : '/Blogdetails/createBlogdetailsRecord';
+      const url = editingBlogId
+        ? `/Blogdetails/updateBlogdetailsRecord/${editingBlogId}`
+        : '/Blogdetails/createBlogdetailsRecord';
       const method = editingBlogId ? 'put' : 'post';
 
       axios({
@@ -144,7 +147,8 @@ const BlogDetail = () => {
   };
 
   const handleDeleteBlog = (blogId) => {
-    axios.delete(`/Blogdetails/deleteBlogdetailsRecord/${blogId}`)
+    axios
+      .delete(`/Blogdetails/deleteBlogdetailsRecord/${blogId}`)
       .then((response) => {
         console.log('Blog details deleted successfully');
         fetchBlogDetails(); // Refresh data after successful delete
@@ -204,6 +208,7 @@ const BlogDetail = () => {
                   value={blogDate}
                   onChange={(e) => setBlogDate(e.target.value)}
                   variant="outlined"
+                  type="date"
                 />
                 {blogErrors.date && (
                   <span className="error" style={{ color: 'red' }}>
@@ -226,11 +231,7 @@ const BlogDetail = () => {
                 )}
               </Grid>
               <Grid item xs={12}>
-                <input
-                  type="file"
-                  onChange={handleFileChange}
-                  accept="image/*"
-                />
+                <input type="file" onChange={handleFileChange} accept="image/*" />
                 {blogErrors.img && (
                   <span className="error" style={{ color: 'red' }}>
                     {blogErrors.img}
@@ -240,10 +241,18 @@ const BlogDetail = () => {
               <Grid item xs={12}>
                 {blogImgPreview && (
                   <div>
-                    <img src={blogImgPreview} alt="Preview" style={{ width: '100px', height: '100px', marginBottom: '10px' }} />
+                    <img
+                      src={blogImgPreview}
+                      alt="Preview"
+                      style={{ width: '100px', height: '100px', marginBottom: '10px' }}
+                    />
                   </div>
                 )}
-                <Button variant="contained" type="submit" color="primary">
+                <Button
+                  variant="contained"
+                  type="submit"
+                  color={editingBlogId ? 'success' : 'primary'}
+                >
                   {editingBlogId ? 'Update' : 'Submit'}
                 </Button>
               </Grid>
@@ -264,7 +273,9 @@ const BlogDetail = () => {
               <TableBody>
                 {blogData.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} style={{ textAlign: 'center' }}>No data found</TableCell>
+                    <TableCell colSpan={5} style={{ textAlign: 'center' }}>
+                      No data found
+                    </TableCell>
                   </TableRow>
                 ) : (
                   blogData.map((blog, index) => (
@@ -273,13 +284,25 @@ const BlogDetail = () => {
                       <TableCell>{blog.date}</TableCell>
                       <TableCell>{blog.subtitle}</TableCell>
                       <TableCell>
-                        <img src={blog.img} alt="Thumbnail" style={{ width: '50px', height: '50px' }} />
+                        <img
+                          src={blog.img}
+                          alt="Thumbnail"
+                          style={{ width: '50px', height: '50px' }}
+                        />
                       </TableCell>
                       <TableCell>
-                        <IconButton aria-label="edit" onClick={() => handleEditBlog(blog)}>
+                        <IconButton
+                          aria-label="edit"
+                          style={{ color: 'blue' }}
+                          onClick={() => handleEditBlog(blog)}
+                        >
                           <EditIcon />
                         </IconButton>
-                        <IconButton aria-label="delete" onClick={() => handleDeleteBlog(blog.id)}>
+                        <IconButton
+                          aria-label="delete"
+                          style={{ color: 'red' }}
+                          onClick={() => handleDeleteBlog(blog.id)}
+                        >
                           <DeleteIcon />
                         </IconButton>
                       </TableCell>
@@ -295,5 +318,4 @@ const BlogDetail = () => {
   );
 };
 
-
-export default BlogDetail
+export default BlogDetail;

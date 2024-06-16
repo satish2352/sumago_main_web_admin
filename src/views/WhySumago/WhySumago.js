@@ -199,7 +199,7 @@ const WhySumago = () => {
                     <img src={imgPreview} alt="Preview" style={{ width: '100px', height: '100px', marginBottom: '10px' }} />
                   </div>
                 )}
-                <Button variant="contained" type="submit" color="primary">
+                <Button variant="contained" type="submit" color={editingId ? 'success' : 'primary'}>
                   {editingId ? 'Update' : 'Submit'}
                 </Button>
               </Grid>
@@ -230,10 +230,10 @@ const WhySumago = () => {
                         <img src={reason.img} alt="Thumbnail" style={{ width: '50px', height: '50px' }} />
                       </TableCell>
                       <TableCell>
-                        <IconButton aria-label="edit" onClick={() => handleEdit(reason)}>
+                        <IconButton aria-label="edit" style={{ color: 'blue' }} onClick={() => handleEdit(reason)}>
                           <EditIcon />
                         </IconButton>
-                        <IconButton aria-label="delete" onClick={() => handleDelete(reason.id)}>
+                        <IconButton aria-label="delete" style={{ color: 'red' }} onClick={() => handleDelete(reason.id)}>
                           <DeleteIcon />
                         </IconButton>
                       </TableCell>

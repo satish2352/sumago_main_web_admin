@@ -25,7 +25,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useNavigate } from 'react-router';
 
 const LifeCategoryDetails = () => {
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState(true);
   const [category, setCategory] = useState('');
   const [img, setImg] = useState(null);
   const [errors, setErrors] = useState({});

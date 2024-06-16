@@ -16,7 +16,7 @@ const Mission = () => {
   const [data, setData] = useState([]);
   const navigate = useNavigate();
   useEffect(() => {
-    axios.get("/aboutmission/getAllaboutmissionRecord").then((result) => {
+    axios.get("/aboutmission/find_all").then((result) => {
       setData(result.data);
     }).catch((err) => {
       if (err?.response?.status === 401) {
@@ -67,7 +67,7 @@ const Mission = () => {
         .then((resp) => {
           console.log("resp", resp);
           alert('Form submitted successfully');
-          setShow(true);
+          setShow(false);
         }).catch((err) => {
           if (err?.response?.status === 401) {
             navigate('/auth/login');
@@ -86,7 +86,7 @@ const Mission = () => {
     axios.delete(`/aboutmission/delete/${missionId}`)
       .then((response) => {
         console.log('Mission record deleted successfully');
-        axios.get("/aboutmission/getAllaboutmissionRecord").then((result) => {
+        axios.get("/aboutmission/find_all").then((result) => {
           setData(result.data);
         }).catch((err) => {
           if (err?.response?.status === 401) {
@@ -107,7 +107,7 @@ const Mission = () => {
     setId(data.id);
     setTitle(data.title);
     setImg(null); // Assume new image upload is optional
-    setShow(false);
+    setShow(true);
   };
 
   return (
@@ -133,7 +133,7 @@ const Mission = () => {
                     <TableRow key={id}>
                       <TableCell>{item.title}</TableCell>
                       <TableCell>
-                        <img src={item.img} alt={item.title} style={{ width: '100px', height: '100px' }} />
+                        <img src={item.img} alt={item.title} style={{ width: '50px', height: '50px' }} />
                       </TableCell>
                       <TableCell>
                         <IconButton aria-label="edit" style={{ color: 'blue' }} onClick={() => handleEdit(item)}>
@@ -164,7 +164,7 @@ const Mission = () => {
                 </div>
               </Grid>
               <Grid item xs={12}>
-                <Button variant="contained" type="submit" color="primary">
+                <Button variant="contained" type="submit" color={id ? "success" : "primary"}>
                   Submit
                 </Button>
               </Grid>

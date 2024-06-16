@@ -115,7 +115,7 @@ const Appreciations = () => {
         .then((resp) => {
           console.log('resp', resp);
           alert('Form submitted successfully');
-          setShow(true);
+          setShow(false);
           fetchData(); // Refresh data after successful submit
         })
         .catch((err) => {
@@ -136,7 +136,7 @@ const Appreciations = () => {
     setImg(null);
     setImgPreview(item.img); // Set the existing image URL
     setEditingId(item.id);
-    setShow(false);
+    setShow(true);
   };
 
   const handleDelete = (teamId) => {

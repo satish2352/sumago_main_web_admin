@@ -99,7 +99,6 @@ const TeamMember = () => {
       if (img) {
         formData.append('img', img);
       }
-
       const url = editingId ? `/team/updateTeamRecord/${editingId}` : '/team/createteamRecord';
       const method = editingId ? 'put' : 'post';
 
@@ -112,7 +111,7 @@ const TeamMember = () => {
         .then((resp) => {
           console.log('resp', resp);
           alert('Form submitted successfully');
-          setShow(true);
+          setShow(false);
           fetchData(); // Refresh data after successful submit
         })
         .catch((err) => {
@@ -125,12 +124,13 @@ const TeamMember = () => {
   };
 
   const handleEdit = (item) => {
+    console.log("item",item);
     setName(item.name);
     setDesignation(item.designation);
     setImg(null);
     setImgPreview(item.img); // Set the existing image URL
     setEditingId(item.id);
-    setShow(false);
+    setShow(true);
   };
 
   const handleDelete = (teamId) => {
@@ -201,7 +201,7 @@ const TeamMember = () => {
                     <img src={imgPreview} alt="Preview" style={{ width: '100px', height: '100px', marginBottom: '10px' }} />
                   </div>
                 )}
-                <Button variant="contained" type="submit" color="primary">
+                <Button variant="contained" type="submit" color={editingId ? "success" : "primary"}>
                   {editingId ? 'Update' : 'Submit'}
                 </Button>
               </Grid>

@@ -33,7 +33,8 @@ const HomeTechnologies = () => {
   }, []);
 
   const fetchTechnologies = () => {
-    axios.get('/hometechnologies/gethometechnologies')
+    axios
+      .get('/hometechnologies/gethometechnologies')
       .then((response) => {
         setTechnologies(response.data);
       })
@@ -86,7 +87,9 @@ const HomeTechnologies = () => {
         formData.append('img', img);
       }
 
-      const url = editingId ? `/hometechnologies/updatehometechnologiesRecord/${editingId}` : '/hometechnologies/createhometechnologiesRecord';
+      const url = editingId
+        ? `/hometechnologies/updatehometechnologiesRecord/${editingId}`
+        : '/hometechnologies/createhometechnologiesRecord';
       const method = editingId ? 'put' : 'post';
 
       axios({
@@ -120,7 +123,8 @@ const HomeTechnologies = () => {
   };
 
   const handleDelete = (technologyId) => {
-    axios.delete(`/hometechnologies/deletehometechnologiesRecord/${technologyId}`)
+    axios
+      .delete(`/hometechnologies/deletehometechnologiesRecord/${technologyId}`)
       .then((response) => {
         console.log('Technology deleted successfully');
         fetchTechnologies(); // Refresh data after successful delete
@@ -158,11 +162,7 @@ const HomeTechnologies = () => {
                 )}
               </Grid>
               <Grid item xs={12}>
-                <input
-                  type="file"
-                  onChange={handleFileChange}
-                  accept="image/*"
-                />
+                <input type="file" onChange={handleFileChange} accept="image/*" />
                 {errors.img && (
                   <span className="error" style={{ color: 'red' }}>
                     {errors.img}
@@ -172,10 +172,14 @@ const HomeTechnologies = () => {
               <Grid item xs={12}>
                 {imgPreview && (
                   <div>
-                    <img src={imgPreview} alt="Preview" style={{ width: '100px', height: '100px', marginBottom: '10px' }} />
+                    <img
+                      src={imgPreview}
+                      alt="Preview"
+                      style={{ width: '100px', height: '100px', marginBottom: '10px' }}
+                    />
                   </div>
                 )}
-                <Button variant="contained" type="submit" color="primary">
+                <Button variant="contained" type="submit" color={editingId ? 'success' : 'primary'}>
                   {editingId ? 'Update' : 'Submit'}
                 </Button>
               </Grid>
@@ -194,20 +198,34 @@ const HomeTechnologies = () => {
               <TableBody>
                 {technologies.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={3} style={{ textAlign: 'center' }}>No data found</TableCell>
+                    <TableCell colSpan={3} style={{ textAlign: 'center' }}>
+                      No data found
+                    </TableCell>
                   </TableRow>
                 ) : (
                   technologies.map((technology, index) => (
                     <TableRow key={technology.id}>
                       <TableCell>{technology.title}</TableCell>
                       <TableCell>
-                        <img src={technology.img} alt="Thumbnail" style={{ width: '50px', height: '50px' }} />
+                        <img
+                          src={technology.img}
+                          alt="Thumbnail"
+                          style={{ width: '50px', height: '50px' }}
+                        />
                       </TableCell>
                       <TableCell>
-                        <IconButton aria-label="edit" onClick={() => handleEdit(technology)}>
+                        <IconButton
+                          aria-label="edit"
+                          style={{ color: 'blue' }}
+                          onClick={() => handleEdit(technology)}
+                        >
                           <EditIcon />
                         </IconButton>
-                        <IconButton aria-label="delete" onClick={() => handleDelete(technology.id)}>
+                        <IconButton
+                          aria-label="delete"
+                          style={{ color: 'red' }}
+                          onClick={() => handleDelete(technology.id)}
+                        >
                           <DeleteIcon />
                         </IconButton>
                       </TableCell>
@@ -223,6 +241,4 @@ const HomeTechnologies = () => {
   );
 };
 
-
-
-export default HomeTechnologies
+export default HomeTechnologies;

@@ -69,7 +69,7 @@ const CompanyCulture = () => {
     setEditingId(null);
   };
   const onClick1 = () => {
-    setShow(false);
+    setShow(true);
   };
 
   const validateForm = () => {
@@ -107,7 +107,7 @@ const CompanyCulture = () => {
           .then((resp) => {
             console.log('resp', resp);
             alert('Category updated successfully');
-            setShow(true);
+            setShow(false);
             setEditingId(null);
           })
           .catch((err) => {
@@ -124,7 +124,7 @@ const CompanyCulture = () => {
           .then((resp) => {
             console.log('resp', resp);
             alert('Form submitted successfully');
-            setShow(true);
+            setShow(false);
           })
           .catch((err) => {
             if (err?.response?.status === 401) {
@@ -142,7 +142,7 @@ const CompanyCulture = () => {
   const handleEdit = (item) => {
     setCategory(item.category);
     setEditingId(item.id);
-    setShow(false);
+    setShow(true);
   };
 
   const handleDelete = (life_category_details) => {
@@ -175,7 +175,7 @@ const CompanyCulture = () => {
     <PageContainer title="Life Category Details" description="this is Sample page">
       <DashboardCard
         title="Life Category Details"
-        buttonName={show ? 'Add CompanyCulture Details' : 'View CompanyCulture Details'}
+        buttonName={!show ? 'Add CompanyCulture Details' : 'View CompanyCulture Details'}
         onClick={show ? onClick1 : onClick}
       >
         {show ? (
@@ -221,7 +221,7 @@ const CompanyCulture = () => {
                 </div>
               </Grid>
               <Grid item xs={12}>
-                <Button variant="contained" type="submit" color="primary">
+                <Button variant="contained" type="submit" color={editingId ? "success" : "primary"}>
                   {editingId ? 'Update' : 'Submit'}
                 </Button>
               </Grid>

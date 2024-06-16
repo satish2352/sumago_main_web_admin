@@ -23,7 +23,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useNavigate } from 'react-router';
 const InternshipOpening = () => {
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState(true);
   const [designation, setDesignation] = useState('');
   const [opening, setOpening] = useState('');
   const [location, setLocation] = useState('');
@@ -281,7 +281,7 @@ const InternshipOpening = () => {
                 )}
               </Grid>
               <Grid item xs={12}>
-                <Button variant="contained" type="submit" color="primary">
+                <Button variant="contained" type="submit" color={editingId ? 'success' : 'primary'}>
                   {editingId ? 'Update' : 'Submit'}
                 </Button>
               </Grid>
