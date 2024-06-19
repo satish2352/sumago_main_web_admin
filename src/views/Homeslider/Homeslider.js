@@ -4,9 +4,6 @@ import {
   TextField,
   Button,
   Grid,
-  Input,
-  FormControl,
-  FormLabel,
   TableContainer,
   Paper,
   Table,
@@ -24,44 +21,31 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useNavigate } from 'react-router';
 
 const Homeslider = () => {
-  const [id, setId] = useState(null);
-  const [show, setShow] = useState(true);
+  const [sliders, setSliders] = useState([]);
   const [title, setTitle] = useState('');
   const [text, setText] = useState('');
   const [img, setImg] = useState(null);
+  const [imgPreview, setImgPreview] = useState(null); // For displaying the existing image
   const [errors, setErrors] = useState({});
-  const [data, setData] = useState([]);
-  const [isEdit, setIsEdit] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [showForm, setShowForm] = useState(false);
   const navigate = useNavigate();
   useEffect(() => {
+    fetchSliders();
+  }, []);
+
+  const fetchSliders = () => {
     axios
       .get('/homeslider/gethomeslider')
-      .then((result) => {
-        setData(result.data);
+      .then((response) => {
+        setSliders(response.data);
       })
-      .catch((err) => {
-        if (err?.response?.status === 401) {
+      .catch((error) => {
+        if (error?.response?.status === 401) {
           navigate('/auth/login');
         }
-        console.log('err', err);
+        console.error('Error fetching home sliders:', error);
       });
-  }, [show]);
-
-  const onClick = () => {
-    setShow(false);
-    resetForm();
-  };
-
-  const onClick1 = () => {
-    setShow(true);
-  };
-
-  const resetForm = () => {
-    setId(null);
-    setTitle('');
-    setText('');
-    setImg(null);
-    setErrors({});
   };
 
   const validateForm = () => {
@@ -76,44 +60,75 @@ const Homeslider = () => {
       errors.text = 'Text is required';
       isValid = false;
     }
-    if (!img && !id) {
+    if (!img && !imgPreview) {
       errors.img = 'Image is required';
       isValid = false;
     }
+
     setErrors(errors);
     return isValid;
   };
 
-  const SubmitForm = (e) => {
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setImg(file);
+    setImgPreview(URL.createObjectURL(file)); // Show preview of new image
+  };
+
+  const resetForm = () => {
+    setTitle('');
+    setText('');
+    setImg(null);
+    setImgPreview(null);
+    setErrors({});
+    setEditingId(null);
+    setShowForm(false);
+  };
+
+  const handleSubmitForm = (e) => {
     e.preventDefault();
     if (validateForm()) {
       const formData = new FormData();
       formData.append('title', title);
       formData.append('text', text);
-      if (img) formData.append('img', img);
+      if (img) {
+        formData.append('img', img);
+      }
 
-      const endpoint = id ? `/homeslider/updatehomeslider/${id}` : '/homeslider/createhomeslider';
-      const method = id ? 'put' : 'post';
+      const url = editingId
+        ? `/homeslider/updatehomeslider/${editingId}`
+        : '/homeslider/createhomeslider';
+      const method = editingId ? 'put' : 'post';
 
       axios({
-        method,
-        url: endpoint,
+        method: method,
+        url: url,
         data: formData,
         headers: { 'Content-Type': 'multipart/form-data' },
       })
-        .then((resp) => {
-          console.log('resp', resp);
-          alert(`${id ? 'Form updated successfully' : 'Form submitted successfully'}`);
-          setShow(true);
+        .then((response) => {
+          console.log('Slider saved successfully:', response);
+          alert('Slider saved successfully');
+          fetchSliders(); // Refresh data after successful save
           resetForm();
         })
-        .catch((err) => {
-          if (err?.response?.status === 401) {
+        .catch((error) => {
+          if (error?.response?.status === 401) {
             navigate('/auth/login');
           }
-          console.log('err', err);
+          console.error('Error saving slider:', error);
+          alert(`Error: ${error.response?.data?.message || 'Something went wrong!'}`);
         });
     }
+  };
+
+  const handleEdit = (slider) => {
+    setTitle(slider.title);
+    setText(slider.text);
+    setImg(null); // Clear the image input field
+    setImgPreview(slider.img); // Set the existing image URL
+    setEditingId(slider.id);
+    setShowForm(true); // Show the form for editing
   };
 
   const handleDelete = (sliderId) => {
@@ -121,17 +136,7 @@ const Homeslider = () => {
       .delete(`/homeslider/deletehomesliderRecord/${sliderId}`)
       .then((response) => {
         console.log('Slider deleted successfully');
-        axios
-          .get('/homeslider/gethomeslider')
-          .then((result) => {
-            setData(result.data);
-          })
-          .catch((err) => {
-            if (err?.response?.status === 401) {
-              navigate('/auth/login');
-            }
-            console.log('err', err);
-          });
+        fetchSliders(); // Refresh data after successful delete
       })
       .catch((error) => {
         if (error?.response?.status === 401) {
@@ -141,75 +146,17 @@ const Homeslider = () => {
       });
   };
 
-  const handleEdit = (data) => {
-    setId(data.id);
-    setTitle(data.title);
-    setText(data.text);
-    setImg(data.img); // Assume new image upload is optional
-    setShow(false);
-  };
-
   return (
-    <PageContainer title="Home Slider" description="this is Sample page">
+    <PageContainer title="Home Slider" description="Manage home sliders">
       <DashboardCard
         title="Home Slider"
-        buttonName={!show ? 'View Sliders' : 'Add Slider'}
-        onClick={!show ? onClick1 : onClick}
+        buttonName={showForm ? 'View Sliders' : 'Add Slider'}
+        onClick={showForm ? () => resetForm() : () => setShowForm(true)}
       >
-        {show ? (
-          <TableContainer component={Paper}>
-            <Table stickyHeader>
-              <TableHead>
-                <TableRow>
-                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Title</TableCell>
-                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Text</TableCell>
-                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Image</TableCell>
-                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Action</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {data.length === 0 ? (
-                  <div style={{ marginLeft: '10px', color: 'red' }}>
-                    <h3>No data found</h3>
-                  </div>
-                ) : (
-                  data.map((item, id) => (
-                    <TableRow key={id}>
-                      <TableCell>{item.title}</TableCell>
-                      <TableCell>{item.text}</TableCell>
-                      <TableCell>
-                        <img
-                          src={item.img}
-                          alt={item.title}
-                          style={{ width: '50px', height: '50px' }}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <IconButton
-                          aria-label="edit"
-                          style={{ color: 'blue' }}
-                          onClick={() => handleEdit(item)}
-                        >
-                          <EditIcon />
-                        </IconButton>
-                        <IconButton
-                          aria-label="delete"
-                          style={{ color: 'red' }}
-                          onClick={() => handleDelete(item.id)}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        ) : (
-          <form onSubmit={SubmitForm}>
+        {showForm ? (
+          <form onSubmit={handleSubmitForm}>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12}>
                 <TextField
                   fullWidth
                   label="Title"
@@ -223,7 +170,7 @@ const Homeslider = () => {
                   </span>
                 )}
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12}>
                 <TextField
                   fullWidth
                   label="Text"
@@ -237,29 +184,82 @@ const Homeslider = () => {
                   </span>
                 )}
               </Grid>
-              <Grid item xs={12} sm={12}>
-                <div>
-                  <FormLabel style={{ marginBottom: '10px' }}>File Upload</FormLabel>
-                  <Input
-                    type="file"
-                    onChange={(e) => setImg(e.target.files[0])}
-                    fullWidth
-                    style={{ marginTop: '10px' }}
-                  />
-                  {errors.img && (
-                    <span className="error" style={{ color: 'red' }}>
-                      {errors.img}
-                    </span>
-                  )}
-                </div>
+              <Grid item xs={12}>
+                <input type="file" onChange={handleFileChange} accept="image/*" />
+                {errors.img && (
+                  <span className="error" style={{ color: 'red' }}>
+                    {errors.img}
+                  </span>
+                )}
               </Grid>
               <Grid item xs={12}>
-                <Button variant="contained" type="submit" color={`${id ? 'success' : 'primary'}`}>
-                  Submit
+                {imgPreview && (
+                  <div>
+                    <img
+                      src={imgPreview}
+                      alt="Preview"
+                      style={{ width: '100px', height: '100px', marginBottom: '10px' }}
+                    />
+                  </div>
+                )}
+                <Button variant="contained" type="submit" color={editingId ? 'success' : 'primary'}>
+                  {editingId ? 'Update' : 'Submit'}
                 </Button>
               </Grid>
             </Grid>
           </form>
+        ) : (
+          <TableContainer component={Paper}>
+            <Table stickyHeader>
+              <TableHead>
+                <TableRow>
+                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Title</TableCell>
+                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Text</TableCell>
+                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Image</TableCell>
+                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Action</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {sliders.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={4} style={{ textAlign: 'center', color: 'red' }}>
+                      No data found
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  sliders.map((slider) => (
+                    <TableRow key={slider.id}>
+                      <TableCell>{slider.title}</TableCell>
+                      <TableCell>{slider.text}</TableCell>
+                      <TableCell>
+                        <img
+                          src={slider.img}
+                          alt="Thumbnail"
+                          style={{ width: '50px', height: '50px' }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <IconButton
+                          style={{ color: 'blue' }}
+                          aria-label="edit"
+                          onClick={() => handleEdit(slider)}
+                        >
+                          <EditIcon />
+                        </IconButton>
+                        <IconButton
+                          style={{ color: 'red' }}
+                          aria-label="delete"
+                          onClick={() => handleDelete(slider.id)}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
         )}
       </DashboardCard>
     </PageContainer>

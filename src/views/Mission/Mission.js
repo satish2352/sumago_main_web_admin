@@ -1,5 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, TextField, Button, Grid, Input, FormControl, FormLabel, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
+import {
+  Typography,
+  TextField,
+  Button,
+  Grid,
+  Input,
+  FormControl,
+  FormLabel,
+  TableContainer,
+  Paper,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  MenuItem,
+} from '@mui/material';
 import PageContainer from 'src/components/container/PageContainer';
 import DashboardCard from '../../components/shared/DashboardCard';
 import axios from 'axios';
@@ -7,34 +23,42 @@ import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useNavigate } from 'react-router';
+
 const Mission = () => {
-  const [id, setId] = useState(null);
-  const [show, setShow] = useState(false);
-  const [title, setTitle] = useState("");
+  const [showForm, setShowForm] = useState(false);
+  const [title, setTitle] = useState('');
   const [img, setImg] = useState(null);
+  const [imgPreview, setImgPreview] = useState(null); // For displaying the existing image
   const [errors, setErrors] = useState({});
   const [data, setData] = useState([]);
+  const [editingId, setEditingId] = useState(null);
   const navigate = useNavigate();
-  useEffect(() => {
-    axios.get("/aboutmission/find_all").then((result) => {
-      setData(result.data);
-    }).catch((err) => {
-      if (err?.response?.status === 401) {
-        navigate('/auth/login');
-      }
-      console.log("err", err);
-    });
-  }, [show]);
 
-  const onClick = () => {
-    setShow(true);
-    setId(null);
-    setTitle("");
-    setImg(null);
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = () => {
+    axios
+      .get('/aboutmission/find_all')
+      .then((result) => {
+        setData(result.data);
+      })
+      .catch((err) => {
+        if (err?.response?.status === 401) {
+          navigate('/auth/login');
+        }
+        console.log('Error fetching mission details:', err);
+      });
   };
 
-  const onClick1 = () => {
-    setShow(false);
+  const resetForm = () => {
+    setTitle('');
+    setImg(null);
+    setImgPreview(null);
+    setErrors({});
+    setEditingId(null);
+    setShowForm(false);
   };
 
   const validateForm = () => {
@@ -45,101 +69,178 @@ const Mission = () => {
       errors.title = 'Title is required';
       isValid = false;
     }
-    if (!img && !id) {
+
+    if (!img && !imgPreview) {
       errors.img = 'Image is required';
       isValid = false;
     }
+
     setErrors(errors);
     return isValid;
   };
 
-  const SubmitForm = (e) => {
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setImg(file);
+    setImgPreview(URL.createObjectURL(file)); // Show preview of new image
+  };
+
+  const handleSubmitForm = (e) => {
     e.preventDefault();
     if (validateForm()) {
       const formData = new FormData();
-      formData.append("title", title);
-      if (img) formData.append("img", img);
+      formData.append('title', title);
+      if (img) {
+        formData.append('img', img);
+      }
 
-      const endpoint = id ? `/aboutmission/update/${id}` : "/aboutmission/create";
-      const method = id ? 'put' : 'post';
+      const url = editingId
+        ? `/aboutmission/update/${editingId}`
+        : '/aboutmission/create';
+      const method = editingId ? 'put' : 'post';
 
-      axios({ method, url: endpoint, data: formData, headers: { "Content-Type": "multipart/form-data" } })
-        .then((resp) => {
-          console.log("resp", resp);
-          alert('Form submitted successfully');
-          setShow(false);
-        }).catch((err) => {
-          if (err?.response?.status === 401) {
+      axios({
+        method: method,
+        url: url,
+        data: formData,
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+        .then((response) => {
+          console.log('Mission details saved successfully:', response);
+          alert('Mission details saved successfully');
+          fetchData(); // Refresh data after successful save
+          resetForm();
+        })
+        .catch((error) => {
+          if (error?.response?.status === 401) {
             navigate('/auth/login');
           }
-          console.log("err", err);
+          console.error('Error saving mission details:', error);
+          alert(`Error: ${error.response?.data?.message || 'Something went wrong!'}`);
         });
-
-      setId(null);
-      setTitle("");
-      setImg(null);
-      setErrors({});
     }
   };
 
-  const handleDelete = (missionId) => {
-    axios.delete(`/aboutmission/delete/${missionId}`)
+  const handleEdit = (item) => {
+    setTitle(item.title);
+    setImg(null); // Clear the image input field
+    setImgPreview(item.img); // Set the existing image URL
+    setEditingId(item.id);
+    setShowForm(true);
+  };
+
+  const handleDelete = (id) => {
+    axios
+      .delete(`/aboutmission/delete/${id}`)
       .then((response) => {
-        console.log('Mission record deleted successfully');
-        axios.get("/aboutmission/find_all").then((result) => {
-          setData(result.data);
-        }).catch((err) => {
-          if (err?.response?.status === 401) {
-            navigate('/auth/login');
-          }
-          console.log("err", err);
-        });
+        console.log('Mission details deleted successfully');
+        fetchData(); // Refresh data after successful delete
       })
       .catch((error) => {
         if (error?.response?.status === 401) {
           navigate('/auth/login');
         }
-        console.error('Error deleting mission record:', error);
+        console.error('Error deleting mission details:', error);
       });
   };
 
-  const handleEdit = (data) => {
-    setId(data.id);
-    setTitle(data.title);
-    setImg(null); // Assume new image upload is optional
-    setShow(true);
-  };
-
   return (
-    <PageContainer title="About Mission" description="this is Sample page">
-      <DashboardCard title="About Mission" buttonName={show ? "View Records" : "Add Record"} onClick={show ? onClick1 : onClick}>
-        {!show ? (
+    <PageContainer title="Mission" description="Manage mission details">
+      <DashboardCard
+        title="Mission"
+        buttonName={showForm ? 'View Mission Details' : 'Add Mission Details'}
+        onClick={showForm ? resetForm : () => setShowForm(true)}
+      >
+        {showForm ? (
+          <form onSubmit={handleSubmitForm}>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  variant="outlined"
+                />
+                {errors.title && (
+                  <span className="error" style={{ color: 'red' }}>
+                    {errors.title}
+                  </span>
+                )}
+              </Grid>
+              <Grid item xs={12}>
+                <FormControl>
+                  <FormLabel style={{ marginBottom: '10px' }}>File Upload</FormLabel>
+                  <Input
+                    type="file"
+                    onChange={handleFileChange}
+                    fullWidth
+                    style={{ marginTop: '10px' }}
+                  />
+                  {errors.img && (
+                    <span className="error" style={{ color: 'red' }}>
+                      {errors.img}
+                    </span>
+                  )}
+                </FormControl>
+                {imgPreview && (
+                  <div>
+                    <img
+                      src={imgPreview}
+                      alt="Preview"
+                      style={{ width: '100px', height: '100px', marginTop: '10px' }}
+                    />
+                  </div>
+                )}
+              </Grid>
+              <Grid item xs={12}>
+                <Button variant="contained" type="submit" color={editingId ? 'success' : 'primary'}>
+                  {editingId ? 'Update' : 'Submit'}
+                </Button>
+              </Grid>
+            </Grid>
+          </form>
+        ) : (
           <TableContainer component={Paper}>
             <Table stickyHeader>
               <TableHead>
                 <TableRow>
-                  <TableCell style={{ fontWeight: "bold", fontSize: "1rem" }}>Title</TableCell>
-                  <TableCell style={{ fontWeight: "bold", fontSize: "1rem" }}>Image</TableCell>
-                  <TableCell style={{ fontWeight: "bold", fontSize: "1rem" }}>Action</TableCell>
+                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Title</TableCell>
+                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Image</TableCell>
+                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Action</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {data.length === 0 ? (
-                  <div style={{ marginLeft: "10px", color: "red" }}>
-                    <h3>No data found</h3>
-                  </div>
+                  <TableRow>
+                    <TableCell colSpan={3} style={{ textAlign: 'center', color: 'red' }}>
+                      No data found
+                    </TableCell>
+                  </TableRow>
                 ) : (
-                  data.map((item, id) => (
-                    <TableRow key={id}>
+                  data.map((item) => (
+                    <TableRow key={item.id}>
                       <TableCell>{item.title}</TableCell>
                       <TableCell>
-                        <img src={item.img} alt={item.title} style={{ width: '50px', height: '50px' }} />
+                        <img
+                          src={item.img}
+                          alt={item.title}
+                          style={{ width: '50px', height: '50px' }}
+                        />
                       </TableCell>
                       <TableCell>
-                        <IconButton aria-label="edit" style={{ color: 'blue' }} onClick={() => handleEdit(item)}>
+                        <IconButton
+                          aria-label="edit"
+                          style={{ color: 'blue' }}
+                          onClick={() => handleEdit(item)}
+                        >
                           <EditIcon />
                         </IconButton>
-                        <IconButton aria-label="delete" style={{ color: 'red' }} onClick={() => handleDelete(item.id)}>
+                        <IconButton
+                          aria-label="delete"
+                          style={{ color: 'red' }}
+                          onClick={() => handleDelete(item.id)}
+                        >
                           <DeleteIcon />
                         </IconButton>
                       </TableCell>
@@ -149,32 +250,10 @@ const Mission = () => {
               </TableBody>
             </Table>
           </TableContainer>
-        ) : (
-          <form onSubmit={SubmitForm}>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField fullWidth label="Title" value={title} onChange={(e) => setTitle(e.target.value)} variant="outlined" />
-                {errors.title && <span className="error" style={{ color: 'red' }}>{errors.title}</span>}
-              </Grid>
-              <Grid item xs={12} sm={12}>
-                <div>
-                  <FormLabel style={{ marginBottom: '10px' }}>File Upload</FormLabel>
-                  <Input type="file" onChange={(e) => setImg(e.target.files[0])} fullWidth style={{ marginTop: '10px' }} />
-                  {errors.img && <span className="error" style={{ color: 'red' }}>{errors.img}</span>}
-                </div>
-              </Grid>
-              <Grid item xs={12}>
-                <Button variant="contained" type="submit" color={id ? "success" : "primary"}>
-                  Submit
-                </Button>
-              </Grid>
-            </Grid>
-          </form>
         )}
       </DashboardCard>
     </PageContainer>
   );
 };
 
-
-export default Mission
+export default Mission;

@@ -21,14 +21,14 @@ import axios from 'axios';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useNavigate } from 'react-router';
+
 const CompanyCultureCategories = () => {
   const [show, setShow] = useState(false);
   const [category, setCategory] = useState('');
   const [errors, setErrors] = useState({});
   const [data, setData] = useState([]);
   const [editingId, setEditingId] = useState(null);
-  const navigate = useNavigate();
+
   useEffect(() => {
     axios
       .get('/culture_category/getCultureCategory')
@@ -36,21 +36,18 @@ const CompanyCultureCategories = () => {
         setData(result.data);
       })
       .catch((err) => {
-        if (err?.response?.status === 401) {
-          navigate('/auth/login');
-        }
         console.log('err', err);
       });
   }, [show]);
 
   const onClick = () => {
-    setShow(false);
+    setShow(true);
     setCategory('');
     setErrors({});
     setEditingId(null);
   };
   const onClick1 = () => {
-    setShow(true);
+    setShow(false);
   };
 
   const validateForm = () => {
@@ -81,12 +78,9 @@ const CompanyCultureCategories = () => {
             console.log('resp', resp);
             alert('Category updated successfully');
             setEditingId(null);
-            setShow(false);
+            setShow(true);
           })
           .catch((err) => {
-            if (err?.response?.status === 401) {
-              navigate('/auth/login');
-            }
             console.log('err', err);
           });
       } else {
@@ -97,12 +91,9 @@ const CompanyCultureCategories = () => {
           .then((resp) => {
             console.log('resp', resp);
             alert('Form submitted successfully');
-            setShow(false);
+            setShow(true);
           })
           .catch((err) => {
-            if (err?.response?.status === 401) {
-              navigate('/auth/login');
-            }
             console.log('err', err);
           });
       }
@@ -114,7 +105,7 @@ const CompanyCultureCategories = () => {
   const handleEdit = (item) => {
     setCategory(item.category);
     setEditingId(item.id);
-    setShow(true);
+    setShow(false);
   };
 
   const handleDelete = (life_category) => {
@@ -129,16 +120,10 @@ const CompanyCultureCategories = () => {
             setData(result.data);
           })
           .catch((err) => {
-            if (err?.response?.status === 401) {
-              navigate('/auth/login');
-            }
             console.log('err', err);
           });
       })
       .catch((error) => {
-        if (error?.response?.status === 401) {
-          navigate('/auth/login');
-        }
         console.error('Error deleting life_category:', error);
       });
   };
@@ -147,8 +132,8 @@ const CompanyCultureCategories = () => {
     <PageContainer title="Category" description="This is a sample page">
       <DashboardCard
         title="Category"
-        buttonName={!show ? 'Add Category' : 'View Category'}
-        onClick={!show ? onClick1 : onClick}
+        buttonName={show ? 'Add Category' : 'View Category'}
+        onClick={show ? onClick1 : onClick}
       >
         {show ? (
           <form onSubmit={SubmitForm}>
@@ -168,7 +153,7 @@ const CompanyCultureCategories = () => {
                 )}
               </Grid>
               <Grid item xs={12}>
-                <Button variant="contained" type="submit" color={editingId ? "success" : "primary"}>
+                <Button variant="contained" type="submit" color="primary">
                   {editingId ? 'Update' : 'Submit'}
                 </Button>
               </Grid>
