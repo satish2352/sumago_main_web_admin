@@ -28,11 +28,14 @@ import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 const ApplyNowForm = () => {
   const [data, setData] = useState([]);
   const navigate = useNavigate();
+
   useEffect(() => {
     axios
       .get('applynow/find')
       .then((result) => {
-        setData(result.data);
+        const sortedData = result.data.sort((a, b) => b.id - a.id);
+
+        setData(sortedData);
       })
       .catch((err) => {
         if (err?.response?.status === 401) {
@@ -73,6 +76,24 @@ const ApplyNowForm = () => {
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Applnow');
     XLSX.writeFile(workbook, 'Applnow.xlsx');
   };
+  const handleDownload = async (url) => {
+    try {
+      const response = await fetch(url, { method: 'GET' });
+      if (!response.ok) throw new Error('Network response was not ok.');
+
+      const blob = await response.blob();
+      const link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.download = url.split('/').pop(); // Extract filename from URL
+      link.style.display = 'none'; // Hide link
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Error downloading file:', error);
+    }
+  };
+
   return (
     <PageContainer title="ApplyNow Form" description="this is Sample page">
       <DashboardCard title="">
@@ -102,22 +123,22 @@ const ApplyNowForm = () => {
             <Table stickyHeader>
               <TableHead>
                 <TableRow>
-                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>
-                    Application Type
-                  </TableCell>
-                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Name</TableCell>
-                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Title</TableCell>
-                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Email</TableCell>
-                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>
-                    Confirm Email
-                  </TableCell>
-                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Phone No.</TableCell>
-                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Address</TableCell>
-                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>CV</TableCell>
-                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>
+                  <TableCell style={{ fontWeight: 'bold', fontSize: '0.6rem' }}>Action</TableCell>
+                  <TableCell style={{ fontWeight: 'bold', fontSize: '0.6rem' }}>CV</TableCell>
+                  <TableCell style={{ fontWeight: 'bold', fontSize: '0.6rem' }}>
                     Cover Letter
                   </TableCell>
-                  <TableCell style={{ fontWeight: 'bold', fontSize: '1rem' }}>Action</TableCell>
+
+                  <TableCell style={{ fontWeight: 'bold', fontSize: '0.6rem' }}>
+                    Application Type
+                  </TableCell>
+                  <TableCell style={{ fontWeight: 'bold', fontSize: '0.6rem' }}>Name</TableCell>
+                  <TableCell style={{ fontWeight: 'bold', fontSize: '0.6rem' }}>Title</TableCell>
+                  <TableCell style={{ fontWeight: 'bold', fontSize: '0.6rem' }}>Email</TableCell>
+
+                  <TableCell style={{ fontWeight: 'bold', fontSize: '0.6rem' }}>Phone No.</TableCell>
+                  <TableCell style={{ fontWeight: 'bold', fontSize: '0.6rem' }}>Address</TableCell>
+
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -132,16 +153,19 @@ const ApplyNowForm = () => {
                     return (
                       <>
                         <TableRow>
-                          <TableCell>{item?.applicationType}</TableCell>
-                          <TableCell>{item?.name}</TableCell>
-                          <TableCell>{item?.title}</TableCell>
-                          <TableCell>{item?.email}</TableCell>
-                          <TableCell>{item?.confmEmail}</TableCell>
-                          <TableCell>{item?.phone}</TableCell>
-                          <TableCell>{item?.address}</TableCell>
+                          <IconButton
+                            aria-label="delete"
+                            style={{ color: 'red' }}
+                            onClick={() => handleDelete(item?.id)}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
                           <TableCell>
                             {item?.cv && (
-                              <a href={item?.cv} style={{ textDecoration: 'none', color:"green" }} download>
+                              <a href={item?.cv}  onClick={() => {
+                                  // Prevent default action
+                                  handleDownload(item.cv); // Trigger download
+                                }}target='_blank' style={{ textDecoration: 'none', color: "green" }} download>
                                 <Badge color="success" badgeContent={0}>
                                   <CloudDownloadIcon />
                                 </Badge>
@@ -151,9 +175,13 @@ const ApplyNowForm = () => {
                           <TableCell>
                             {item?.cover_letter && (
                               <a
-                                href={item?.cover_letter}
-                                style={{ textDecoration: 'none', color:"green" }}
-                                download
+                                href={item.cover_letter}
+                                target='_blank'
+                                onClick={() => {
+                                  // Prevent default action
+                                  handleDownload(item.cover_letter); // Trigger download
+                                }}
+                                style={{ textDecoration: 'none', color: 'green' }}
                               >
                                 <Badge color="success" badgeContent={0}>
                                   <CloudDownloadIcon />
@@ -161,13 +189,15 @@ const ApplyNowForm = () => {
                               </a>
                             )}
                           </TableCell>
-                          <IconButton
-                            aria-label="delete"
-                            style={{ color: 'red' }}
-                            onClick={() => handleDelete(item?.id)}
-                          >
-                            <DeleteIcon />
-                          </IconButton>
+
+                          <TableCell>{item?.applicationType}</TableCell>
+                          <TableCell>{item?.name}</TableCell>
+                          <TableCell>{item?.title}</TableCell>
+                          <TableCell>{item?.email}</TableCell>
+                          <TableCell>{item?.phone}</TableCell>
+
+                          <TableCell>{item?.address}</TableCell>
+
                         </TableRow>
                       </>
                     );

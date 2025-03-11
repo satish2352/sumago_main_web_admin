@@ -11,6 +11,7 @@ import {
   TableCell,
   TableBody,
   IconButton,
+  TablePagination,
 } from '@mui/material';
 import PageContainer from 'src/components/container/PageContainer';
 import DashboardCard from '../../components/shared/DashboardCard';
@@ -21,12 +22,16 @@ import { useNavigate } from 'react-router';
 
 const QuotesForm = () => {
   const [data, setData] = useState([]);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5); // Default rows per page
   const navigate = useNavigate();
+
   useEffect(() => {
     axios
       .get('quotes/find')
       .then((result) => {
-        setData(result.data);
+        const sortedData = result.data.sort((a, b) => b.id - a.id);
+        setData(sortedData);
       })
       .catch((err) => {
         if (err?.response?.status === 401) {
@@ -68,6 +73,16 @@ const QuotesForm = () => {
     XLSX.writeFile(workbook, 'QuotesData.xlsx');
   };
 
+  // Handle pagination change
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
   return (
     <PageContainer title="Quotes Form" description="This is Sample page">
       <DashboardCard>
@@ -88,8 +103,6 @@ const QuotesForm = () => {
         </Grid>
 
         <TableContainer component={Paper} style={{ maxHeight: '70vh' }}>
-          {' '}
-          {/* Adjust maxHeight as needed */}
           <Table>
             <TableHead>
               <TableRow>
@@ -100,7 +113,9 @@ const QuotesForm = () => {
                 <TableCell>Type of Services</TableCell>
                 <TableCell>Other Service</TableCell>
                 <TableCell>Address</TableCell>
-                <TableCell>Comment</TableCell>
+                {/* <TableCell>Comment</TableCell> */}
+                <TableCell>City</TableCell>
+                <TableCell>Firm</TableCell>
                 <TableCell>Date</TableCell>
                 <TableCell>Action</TableCell>
               </TableRow>
@@ -108,37 +123,52 @@ const QuotesForm = () => {
             <TableBody>
               {data.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={9} style={{ textAlign: 'initial', color: 'red' }}>
+                  <TableCell colSpan={12} style={{ textAlign: 'center', color: 'red' }}>
                     <Typography variant="h6">No data found</Typography>
                   </TableCell>
                 </TableRow>
               ) : (
-                data.map((item, id) => (
-                  <TableRow key={id}>
-                    <TableCell style={{ overflowWrap: 'anywhere' }}>{id + 1}</TableCell>
-                    <TableCell style={{ overflowWrap: 'anywhere' }}>{item?.name}</TableCell>
-                    <TableCell style={{ overflowWrap: 'anywhere' }}>{item?.email}</TableCell>
-                    <TableCell style={{ overflowWrap: 'anywhere' }}>{item?.phone}</TableCell>
-                    <TableCell style={{ overflowWrap: 'anywhere' }}>{item?.service}</TableCell>
-                    <TableCell style={{ overflowWrap: 'anywhere' }}>{item?.other_service}</TableCell>
-                    <TableCell style={{ overflowWrap: 'anywhere' }}>{item?.address}</TableCell>
-                    <TableCell style={{ overflowWrap: 'anywhere' }}>{item?.comment}</TableCell>
-                    <TableCell>{item?.created_at}</TableCell>
-                    <TableCell>
-                      <IconButton
-                        aria-label="delete"
-                        style={{ color: 'red' }}
-                        onClick={() => handleDelete(item?.id)}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))
+                data
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((item, id) => (
+                    <TableRow key={id}>
+                      <TableCell>{page * rowsPerPage + id + 1}</TableCell>
+                      <TableCell>{item?.name}</TableCell>
+                      <TableCell>{item?.email}</TableCell>
+                      <TableCell>{item?.phone}</TableCell>
+                      <TableCell>{item?.services}</TableCell>
+                      <TableCell>{item?.industry}</TableCell>
+                      <TableCell>{item?.address}</TableCell>
+                      {/* <TableCell>{item?.comment}</TableCell> */}
+                      <TableCell>{item?.city}</TableCell>
+                      <TableCell>{item?.firm}</TableCell>
+                      <TableCell>{new Date(item?.created_at).toLocaleDateString()}</TableCell>
+                      <TableCell>
+                        <IconButton
+                          aria-label="delete"
+                          style={{ color: 'red' }}
+                          onClick={() => handleDelete(item?.id)}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))
               )}
             </TableBody>
           </Table>
         </TableContainer>
+
+        {/* Pagination Controls */}
+        <TablePagination
+          rowsPerPageOptions={[6, 10, 25]}
+          component="div"
+          count={data.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
       </DashboardCard>
     </PageContainer>
   );

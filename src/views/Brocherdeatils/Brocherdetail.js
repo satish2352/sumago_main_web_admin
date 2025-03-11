@@ -30,7 +30,10 @@ const  Brocherdetail = () => {
     axios
       .get('/broucherDownload/getBroucherDownloadRecord')
       .then((result) => {
-        setData(result.data);
+        const sortedData = result.data.sort((a, b) => b.id - a.id);
+
+        setData(sortedData);
+     
       })
       .catch((err) => {
         if (err?.response?.status === 401) {
@@ -48,7 +51,7 @@ const  Brocherdetail = () => {
     XLSX.writeFile(workbook, 'Applnow.xlsx');
   };
   return (
-    <PageContainer title="ApplyNow Form" description="this is Sample page">
+    <PageContainer title="Brocher Detail" description="this is Sample page">
       <DashboardCard title="">
         <Grid container justifyContent="space-between" alignItems="center" style={{ marginBottom: '20px' }}>
           <Grid item>

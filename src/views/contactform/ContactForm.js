@@ -28,7 +28,9 @@ const ContactForm = () => {
     axios
       .get('/contact/getrecords')
       .then((result) => {
-        setData(result.data);
+        const sortedData = result.data.sort((a, b) => b.id - a.id);
+
+        setData(sortedData);
       })
       .catch((err) => {
         console.log('err', err);
